@@ -36,66 +36,49 @@ const readings = [
 
 export default function ReadingsSection() {
   return (
-    /* Light cream section — matches morni's alternating dark/light rhythm */
-    <section className="section section-light" id="readings">
-      {/* Large constellation watermarks — like morni's botanical side silhouettes */}
-      <div className="watermark-side watermark-side--left"  aria-hidden="true" />
-      <div className="watermark-side watermark-side--right" aria-hidden="true" />
-
+    <section className="section section-light readings" id="readings">
       <div className="container">
         <div className="readings__header">
           <div>
             <p className="label label--gold" style={{ marginBottom: 12 }}>
               ✦ Choose Your Path
             </p>
-            <h2 className="heading-lg" style={{ color: "#1a1510" }}>
+            <h2 className="heading-lg readings__title">
               Browse From<br />Existing Readings
             </h2>
           </div>
-          <Link href="#" className="btn btn--outline" style={{ borderColor: "rgba(26,21,16,0.3)", color: "#1a1510" }}>
+          <Link href="#" className="btn btn--outline readings__view-btn">
             View All Readings
           </Link>
         </div>
 
-        {/* Morni-style dashed cutout cards on light background */}
         <div className="readings__grid">
           {readings.map((r) => (
-            <div key={r.id} className="reading-card">
+            <div key={r.id} className="reading-card reading-card--light">
               <div className="reading-card__img-wrap">
                 <Image
                   src={r.image}
                   alt={r.title}
                   fill
                   style={{ objectFit: "cover" }}
-                  sizes="(max-width: 768px) 50vw, 33vw"
+                  sizes="(max-width: 768px) 100vw, 33vw"
                 />
                 <span className="reading-card__badge">{r.badge}</span>
               </div>
 
               <div className="reading-card__body">
                 <p className="reading-card__meta">{r.meta}</p>
-                <h3 className="reading-card__title" style={{ color: "#1a1510" }}>{r.title}</h3>
-                <p className="reading-card__desc" style={{ color: "rgba(26,21,16,0.6)" }}>{r.desc}</p>
+                <h3 className="reading-card__title">{r.title}</h3>
+                <p className="reading-card__desc">{r.desc}</p>
                 <div className="reading-card__footer">
-                  <div className="reading-card__price" style={{ color: "#8c6e28" }}>
-                    {r.price}
-                    <sub>{r.priceSub}</sub>
+                  <div className="reading-card__price">
+                    {r.price}<sub>{r.priceSub}</sub>
                   </div>
-                  <button className="reading-card__arrow" aria-label="Book now"
-                    style={{ borderColor: "rgba(140,110,40,0.3)", color: "#8c6e28" }}>
-                    →
-                  </button>
+                  <button className="reading-card__arrow" aria-label="Book now">→</button>
                 </div>
               </div>
             </div>
           ))}
-        </div>
-
-        <div style={{ textAlign: "center", marginTop: 48 }}>
-          <Link href="#" className="btn btn--outline"
-            style={{ borderColor: "rgba(26,21,16,0.3)", color: "#1a1510", display: "inline-flex" }}>
-            View All Stories
-          </Link>
         </div>
       </div>
     </section>
