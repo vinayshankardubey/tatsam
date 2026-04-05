@@ -1,5 +1,4 @@
 import Navbar from "@/components/Navbar";
-import TickerSection from "@/components/TickerSection";
 import ServicesSection from "@/components/ServicesSection";
 import ReadingsSection from "@/components/ReadingsSection";
 import StatsSection from "@/components/StatsSection";
@@ -13,7 +12,6 @@ export default function Home() {
     <>
       <Navbar />
       <main>
-        <TickerSection />
         <ServicesSection />
         <ReadingsSection />
         <StatsSection />
