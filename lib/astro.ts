@@ -59,6 +59,49 @@ export function sunSignFromDob(dobIso: string | null | undefined): Sign | null {
   return null;
 }
 
+/**
+ * Sun-sign compatibility — element + polarity heuristic. Same element is
+ * harmonious; complementary (fire↔air, earth↔water) is energising; square
+ * elements create creative friction. Returns a 0..100 score + a one-line note.
+ */
+export function signCompatibility(a: string, b: string): { score: number; note: string } {
+  const elemA = SIGNS.find((s) => s.name === a)?.element;
+  const elemB = SIGNS.find((s) => s.name === b)?.element;
+  if (!elemA || !elemB) return { score: 0, note: "—" };
+
+  const same = elemA === elemB;
+  const complementary =
+    (elemA === "fire" && elemB === "air") ||
+    (elemA === "air" && elemB === "fire") ||
+    (elemA === "earth" && elemB === "water") ||
+    (elemA === "water" && elemB === "earth");
+  const tense =
+    (elemA === "fire" && elemB === "water") ||
+    (elemA === "water" && elemB === "fire") ||
+    (elemA === "air" && elemB === "earth") ||
+    (elemA === "earth" && elemB === "air");
+
+  if (same) {
+    return {
+      score: 82,
+      note: `Same element — you understand each other&rsquo;s pace and fuel.`,
+    };
+  }
+  if (complementary) {
+    return {
+      score: 88,
+      note: `Complementary elements — ${elemA} and ${elemB} lift each other.`,
+    };
+  }
+  if (tense) {
+    return {
+      score: 58,
+      note: `Squared elements — real friction; real growth if you stay curious.`,
+    };
+  }
+  return { score: 72, note: "A workable blend of temperaments." };
+}
+
 export const SIGN_BLURBS: Record<string, string> = {
   Aries: "Initiator and spark. A year begins in you — push, but remember to land.",
   Taurus: "Steady, sensual, patient. You build a beautiful life slowly — then keep it.",

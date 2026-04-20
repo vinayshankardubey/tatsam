@@ -4,28 +4,28 @@ import { ArrowUpRight } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 const footerLinks = {
-  Readings: [
-    { name: "Janma Kundli",       href: "#features" },
-    { name: "Numerology report",  href: "#features" },
-    { name: "Love & compatibility",  href: "#features" },
-    { name: "Remedies & muhurat",    href: "#features" },
+  "What you can ask": [
+    { name: "Life & dharma",             href: "#features" },
+    { name: "Chart & numbers",           href: "#features" },
+    { name: "Relationships",             href: "#features" },
+    { name: "Timing & practice",         href: "#features" },
   ],
   Journal: [
-    { name: "Wisdom library", href: "#" },
-    { name: "Ask an acharya", href: "#" },
-    { name: "Daily panchanga", href: "#" },
-    { name: "Seeker stories", href: "#" },
+    { name: "Wisdom library",  href: "#" },
+    { name: "Daily panchang",  href: "#" },
+    { name: "Seeker stories",  href: "#" },
+    { name: "Source index",    href: "#integrations" },
   ],
   Tatsam: [
-    { name: "Our lineage",   href: "#developers" },
-    { name: "Meet the acharyas", href: "#developers" },
-    { name: "Gift a reading",href: "#", badge: "New" },
-    { name: "Contact us",    href: "#" },
+    { name: "How we answer",   href: "#developers" },
+    { name: "Sources we read", href: "#integrations" },
+    { name: "Gift a seat",     href: "#", badge: "New" },
+    { name: "Contact us",      href: "#" },
   ],
   Trust: [
-    { name: "Privacy",        href: "#security" },
+    { name: "Privacy",          href: "#security" },
+    { name: "No-training pledge", href: "#security" },
     { name: "Terms of service", href: "#" },
-    { name: "Refund policy",  href: "#" },
   ],
 };
 
@@ -93,7 +93,7 @@ function AnimatedWaveCanvas() {
 
 export function FooterSection() {
   return (
-    <footer className="relative bg-black">
+    <footer className="relative bg-brown text-ivory pb-20 lg:pb-0">
       {/* Panoramic banner image */}
       <div className="relative w-full h-[340px] md:h-[420px] overflow-hidden">
         <img
@@ -101,13 +101,13 @@ export function FooterSection() {
           alt="Bioluminescent landscape"
           className="w-full h-full object-cover object-center"
         />
-        {/* Gradient fade to black at bottom */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black" />
-        {/* Subtle dark vignette on sides */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
+        {/* Gradient fade to brown at bottom */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-brown" />
+        {/* Subtle brown vignette on sides */}
+        <div className="absolute inset-0 bg-gradient-to-r from-brown/40 via-transparent to-brown/40" />
       </div>
 
-      {/* Footer content — black background, white text */}
+      {/* Footer content — brown background, ivory text */}
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12">
         {/* Main Footer */}
         <div className="py-16 lg:py-20">
@@ -115,12 +115,12 @@ export function FooterSection() {
             {/* Brand Column */}
             <div className="col-span-2">
               <a href="#" className="inline-flex items-center gap-2 mb-6">
-                <span className="text-2xl font-display text-white">Tatsam</span>
-                <span className="text-xs text-white/40 font-mono">तत्सम्</span>
+                <span className="text-2xl font-display text-ivory">Tatsam</span>
+                <span className="text-xs text-ivory/40 font-mono">तत्सम्</span>
               </a>
 
-              <p className="text-white/50 leading-relaxed mb-8 max-w-xs text-sm">
-                Vedic astrology and numerology readings, hand-read by seasoned acharyas. Rooted in tradition, spoken in modern words.
+              <p className="text-ivory/60 leading-relaxed mb-8 max-w-xs text-sm">
+                Ask your questions and receive grounded answers from the classical corpus — the Gita, the Upanishads, the jyotish samhitas. Scripture, read with care.
               </p>
 
               {/* Social Links */}
@@ -129,7 +129,7 @@ export function FooterSection() {
                   <a
                     key={link.name}
                     href={link.href}
-                    className="text-sm text-white/40 hover:text-white transition-colors flex items-center gap-1 group"
+                    className="text-sm text-ivory/50 hover:text-ivory transition-colors flex items-center gap-1 group"
                   >
                     {link.name}
                     <ArrowUpRight className="w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
@@ -141,17 +141,17 @@ export function FooterSection() {
             {/* Link Columns */}
             {Object.entries(footerLinks).map(([title, links]) => (
               <div key={title}>
-                <h3 className="text-sm font-medium text-white mb-6">{title}</h3>
+                <h3 className="text-sm font-medium text-ivory mb-6">{title}</h3>
                 <ul className="space-y-4">
                   {links.map((link) => (
                     <li key={link.name}>
                       <a
                         href={link.href}
-                        className="text-sm text-white/40 hover:text-white transition-colors inline-flex items-center gap-2"
+                        className="text-sm text-ivory/50 hover:text-ivory transition-colors inline-flex items-center gap-2"
                       >
                         {link.name}
                         {"badge" in link && link.badge && (
-                          <span className="text-xs px-2 py-0.5 bg-white text-black rounded-full">
+                          <span className="text-xs px-2 py-0.5 bg-gold text-brown rounded-full">
                             {link.badge}
                           </span>
                         )}
@@ -165,15 +165,15 @@ export function FooterSection() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="py-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-white/30">
+        <div className="py-8 border-t border-ivory/10 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-ivory/40">
             &copy; 2026 Tatsam. Crafted with reverence in India.
           </p>
 
-          <div className="flex items-center gap-4 text-sm text-white/30">
+          <div className="flex items-center gap-4 text-sm text-ivory/40">
             <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#C9A35A]" />
-              Acharyas available today
+              <span className="w-2 h-2 rounded-full bg-gold" />
+              Answering questions now
             </span>
           </div>
         </div>

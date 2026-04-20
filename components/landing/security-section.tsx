@@ -6,31 +6,31 @@ import { Shield, Lock, Eye, FileCheck } from "lucide-react";
 const securityFeatures = [
   {
     icon: Shield,
-    title: "Your birth details stay yours",
-    description: "Never sold, never shared. Encrypted at rest.",
+    title: "Your questions stay yours",
+    description: "End-to-end encrypted. Never sold, never shared, never indexed externally.",
     image: "/images/isolated.jpg",
   },
   {
     icon: Lock,
-    title: "Acharyas under NDA",
-    description: "Every reader signs a strict confidentiality vow.",
+    title: "We don't train on you",
+    description: "Your questions and answers are never used to train any model, ours or anyone else's.",
     image: "/images/encrypted.jpg",
   },
   {
     icon: Eye,
     title: "No dark predictions",
-    description: "Guidance only, never fear-selling or manipulation.",
+    description: "Guidance only, never fear-selling. The scriptures are read with care, not alarm.",
     image: "/images/audit.jpg",
   },
   {
     icon: FileCheck,
     title: "Delete on request",
-    description: "Ask once and your data is permanently erased.",
+    description: "Ask once and your entire history is permanently erased.",
     image: "/images/permissions.jpg",
   },
 ];
 
-const certifications = ["GDPR", "DPDP Act", "SSL 256-bit", "No-resell pledge"];
+const certifications = ["GDPR", "DPDP Act", "SSL 256-bit", "No-training pledge"];
 
 export function SecuritySection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -63,20 +63,19 @@ export function SecuritySection() {
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         {/* Header */}
         <div className="mb-20">
-          <span className={`inline-flex items-center gap-4 text-sm font-mono text-muted-foreground mb-8 transition-all duration-700 ${
+          <span className={`inline-flex items-center text-sm font-mono text-muted-foreground mb-8 transition-all duration-700 ${
             isVisible ? "opacity-100" : "opacity-0"
           }`}>
-            <span className="w-12 h-px bg-foreground/20" />
-            Privacy &amp; sanctity
+            Privacy
           </span>
 
           {/* Title — full width */}
           <h2 className={`text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.9] mb-12 transition-all duration-1000 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}>
-            Sacred counsel,
+            Your questions,
             <br />
-            <span className="text-muted-foreground">kept sacred.</span>
+            <span className="text-muted-foreground">kept private.</span>
           </h2>
 
           {/* Description — below title */}
@@ -84,7 +83,7 @@ export function SecuritySection() {
             isVisible ? "opacity-100" : "opacity-0"
           }`}>
             <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl">
-              Your birth time, your questions, your chart — treated as personal as a family heirloom. No ads, no reselling, no algorithms trained on you.
+              The questions you ask Tatsam — and the answers you receive — are treated as personal as a diary. No ads, no reselling, and nothing you write ever trains a model.
             </p>
           </div>
         </div>
@@ -112,7 +111,7 @@ export function SecuritySection() {
               <span className="font-mono text-sm text-muted-foreground">Our quiet promise</span>
               <div className="mt-8">
                 <span className="text-7xl lg:text-8xl font-display">0</span>
-                <span className="block text-muted-foreground mt-2">Birth records ever shared or sold</span>
+                <span className="block text-muted-foreground mt-2">Questions ever shared, sold, or used to train AI</span>
               </div>
             </div>
             

@@ -3,18 +3,18 @@
 import { useEffect, useState, useRef } from "react";
 
 const integrations = [
-  { name: "Parashari Vedic", category: "Astrology", glyph: "॥" },
-  { name: "KP System",       category: "Astrology", glyph: "क" },
-  { name: "Nadi Jyotish",    category: "Astrology", glyph: "ना" },
-  { name: "Lal Kitab",       category: "Remedies",  glyph: "ल" },
-  { name: "Jaimini",         category: "Astrology", glyph: "जै" },
-  { name: "Prashna Shastra", category: "Horary",    glyph: "प्र" },
-  { name: "Panchanga",       category: "Muhurat",   glyph: "पं" },
-  { name: "27 Nakshatras",   category: "Stars",     glyph: "★" },
-  { name: "Chaldean",        category: "Numerology", glyph: "8" },
-  { name: "Pythagorean",     category: "Numerology", glyph: "7" },
-  { name: "Tarot",           category: "Divination", glyph: "✧" },
-  { name: "Gemstones",       category: "Remedies",   glyph: "◆" },
+  { name: "Bhagavad Gita",          category: "Scripture",  glyph: "गी" },
+  { name: "Upanishads",             category: "Scripture",  glyph: "उप" },
+  { name: "Yoga Sutras",            category: "Scripture",  glyph: "यो" },
+  { name: "Rigveda",                category: "Veda",       glyph: "ऋ" },
+  { name: "Brihat Parashara Hora",  category: "Jyotish",    glyph: "बृ" },
+  { name: "Jaimini Sutras",         category: "Jyotish",    glyph: "जै" },
+  { name: "Brihat Samhita",         category: "Jyotish",    glyph: "सं" },
+  { name: "Muhurta Chintamani",     category: "Muhurat",    glyph: "मु" },
+  { name: "Prashna Marga",          category: "Horary",     glyph: "प्र" },
+  { name: "Lal Kitab",              category: "Remedies",   glyph: "ल" },
+  { name: "Chaldean numerology",    category: "Numerology", glyph: "8" },
+  { name: "Pythagorean numerology", category: "Numerology", glyph: "7" },
 ];
 
 export function IntegrationsSection() {
@@ -40,43 +40,45 @@ export function IntegrationsSection() {
 
       {/* Header — centré verticalement sur l'image */}
       <div className="relative z-10 pt-32 lg:pt-40 text-center">
-        <span className={`inline-flex items-center gap-4 text-sm font-mono text-muted-foreground mb-8 transition-all duration-700 justify-center ${
+        <span className={`inline-flex items-center text-sm font-mono text-muted-foreground mb-8 transition-all duration-700 justify-center ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
-          <span className="w-12 h-px bg-foreground/20" />
-          Traditions we draw from
-          <span className="w-12 h-px bg-foreground/20" />
+          Sources we read
         </span>
 
         <h2 className={`text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.9] transition-all duration-1000 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}>
-          One chart,
+          One question,
           <br />
-          <span className="text-muted-foreground">many lenses.</span>
+          <span className="text-muted-foreground">many scriptures.</span>
         </h2>
 
         <p className={`mt-8 text-xl text-muted-foreground leading-relaxed max-w-lg mx-auto transition-all duration-1000 delay-100 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
-          Every reading is cross-read through classical Vedic, KP, Nadi and numerological systems — so no single school has the last word on your life.
+          Every answer is cross-read against the Gita, the Upanishads, the classical jyotish samhitas, and the numerological traditions — so no single text has the last word on your life.
         </p>
       </div>
 
-      {/* Full-width image */}
-      <div className={`relative left-1/2 -translate-x-1/2 w-screen -mt-16 transition-all duration-1000 delay-200 ${
-        isVisible ? "opacity-100" : "opacity-0"
-      }`}>
+      {/* Full-width image — generous spacing below the copy; height capped on
+          mobile so it stays a graceful rule-line rather than swallowing the
+          viewport. */}
+      <div
+        className={`relative left-1/2 -translate-x-1/2 w-screen mt-16 lg:mt-20 overflow-hidden transition-all duration-1000 delay-200 ${
+          isVisible ? "opacity-100" : "opacity-0"
+        }`}
+      >
         <img
           src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/connection-KeJwWPQvn6l0a7C48tCARYtNEdC92H.png"
           alt=""
           aria-hidden="true"
-          className="w-full h-auto object-cover"
+          className="w-full h-[280px] md:h-[380px] lg:h-auto object-cover object-center"
         />
       </div>
 
-      {/* Integration grid — remonte sur l'image avec spacing mobile approprié */}
-      <div className="relative z-10 mt-0 lg:-mt-24 max-w-[1400px] mx-auto px-6 lg:px-12">
+      {/* Integration grid — breathing room below the image on both mobile and desktop. */}
+      <div className="relative z-10 mt-12 lg:mt-16 max-w-[1400px] mx-auto px-6 lg:px-12">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-16">
           {integrations.map((integration, index) => (
             <div
@@ -147,9 +149,9 @@ export function IntegrationsSection() {
         }`}>
           <div className="flex flex-wrap gap-12">
             {[
-              { value: "12+",    label: "Traditions woven in" },
+              { value: "200+",   label: "Classical sources indexed" },
+              { value: "700+",   label: "Gita verses searchable" },
               { value: "27",     label: "Nakshatras mapped" },
-              { value: "9",      label: "Numerology numbers decoded" },
             ].map((stat) => (
               <div key={stat.label} className="flex items-baseline gap-3">
                 <span className="text-3xl font-display">{stat.value}</span>
@@ -159,7 +161,7 @@ export function IntegrationsSection() {
           </div>
 
           <a href="#" className="group inline-flex items-center gap-2 text-sm font-mono text-muted-foreground hover:text-foreground transition-colors">
-            Explore every tradition
+            Explore every source
             <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
           </a>
         </div>

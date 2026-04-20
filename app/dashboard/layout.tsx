@@ -1,7 +1,10 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { signOut } from "./actions";
+import {
+  DashboardSidebar,
+  type NavGroup,
+  type MobileTab,
+} from "@/components/dashboard/sidebar";
 
 export default async function DashboardLayout({
   children,
@@ -14,39 +17,97 @@ export default async function DashboardLayout({
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name, email, role")
+    .eq("id", user.id)
+    .single();
+
+  const fullName = profile?.full_name ?? "Seeker";
+  const userInitial = (fullName.trim()[0] ?? "S").toUpperCase();
+  const userEmail = profile?.email ?? user.email ?? "";
+
+  const groups: NavGroup[] = [
+    {
+      label: "Daily",
+      items: [
+        { href: "/dashboard",           label: "Today",         icon: "home",     exact: true },
+        { href: "/dashboard/panchang",  label: "Panchang",      icon: "calendar" },
+        { href: "/dashboard/horoscope", label: "Horoscope",     icon: "feather" },
+        { href: "/dashboard/cosmos",    label: "Cosmic events", icon: "star" },
+      ],
+    },
+    {
+      label: "Tatsam",
+      items: [
+        { href: "/tools",                               label: "All of Tatsam",    icon: "compass" },
+        { href: "/dashboard/ask?tool=shri-ram-shalaka", label: "Shri Ram Shalaka", icon: "sparkles" },
+        { href: "/dashboard/ask?tool=gita-shalaka",     label: "Gita Shalaka",     icon: "feather" },
+        { href: "/dashboard/ask?tool=chanakya-niti",    label: "Chanakya Niti",    icon: "feather" },
+        { href: "/dashboard/ask",                       label: "Open chat",        icon: "message" },
+      ],
+    },
+    {
+      label: "Your sky",
+      items: [
+        { href: "/dashboard/kundli",        label: "Kundli",        icon: "sparkles" },
+        { href: "/dashboard/numerology",    label: "Numerology",    icon: "feather" },
+        { href: "/dashboard/compatibility", label: "Compatibility", icon: "heart" },
+      ],
+    },
+    {
+      label: "Readings",
+      items: [
+        { href: "/dashboard/readings", label: "All readings",   icon: "file-text" },
+        { href: "/dashboard/book",     label: "Book a reading", icon: "book" },
+        { href: "/dashboard/remedies", label: "Remedies",       icon: "star" },
+      ],
+    },
+  ];
+
+  // Admin / acharya shortcuts live in a separate group so the main nav
+  // stays seeker-focused.
+  if (profile?.role === "admin" || profile?.role === "acharya") {
+    const crossRole: NavGroup = { label: "Also yours", items: [] };
+    if (profile.role === "admin") {
+      crossRole.items.push({
+        href: "/admin",
+        label: "Admin console",
+        icon: "layout-dashboard",
+      });
+    }
+    if (profile.role === "acharya") {
+      crossRole.items.push({
+        href: "/astrologer",
+        label: "Acharya console",
+        icon: "user-cog",
+      });
+    }
+    groups.push(crossRole);
+  }
+
+  const mobileTabs: MobileTab[] = [
+    { href: "/dashboard",          label: "Today",    icon: "home",     exact: true },
+    { href: "/dashboard/kundli",   label: "Kundli",   icon: "sparkles" },
+    { href: "/tools",              label: "Tatsam",   icon: "compass",  isPrimary: true },
+    { href: "/dashboard/readings", label: "Readings", icon: "file-text" },
+    { href: "/dashboard/profile",  label: "Me",       icon: "user",     isProfile: true },
+  ];
+
   return (
     <div className="min-h-screen bg-ivory text-brown">
-      <header className="sticky top-0 z-30 bg-ivory/80 backdrop-blur-xl border-b border-gold/20">
-        <div className="max-w-[1200px] mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <span className="text-xl font-display text-brown">Tatsam</span>
-            <span className="text-[10px] text-brown/50 font-mono">तत्सम्</span>
-          </Link>
+      <DashboardSidebar
+        groups={groups}
+        mobileTabs={mobileTabs}
+        userLabel={fullName}
+        userEmail={userEmail}
+        userInitial={userInitial}
+      />
 
-          <nav className="flex items-center gap-8 text-sm">
-            <Link href="/dashboard" className="text-brown/70 hover:text-brown transition-colors">
-              Overview
-            </Link>
-            <Link
-              href="/dashboard/book"
-              className="text-brown/70 hover:text-brown transition-colors"
-            >
-              Book a reading
-            </Link>
-            <form action={signOut}>
-              <button
-                type="submit"
-                className="text-brown/70 hover:text-maroon transition-colors"
-              >
-                Sign out
-              </button>
-            </form>
-          </nav>
+      <main className="lg:pl-[240px] pb-24 lg:pb-0">
+        <div className="max-w-[1100px] mx-auto px-6 lg:px-10 py-8 lg:py-14">
+          {children}
         </div>
-      </header>
-
-      <main className="max-w-[1200px] mx-auto px-6 lg:px-10 py-12 lg:py-16">
-        {children}
       </main>
     </div>
   );

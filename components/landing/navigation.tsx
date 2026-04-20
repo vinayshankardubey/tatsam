@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 
 const navLinks = [
-  { name: "Readings",   href: "#features"      },
-  { name: "Process",    href: "#how-it-works"  },
-  { name: "Reach",      href: "#infra"         },
-  { name: "Traditions", href: "#integrations"  },
-  { name: "Privacy",    href: "#security"      },
+  { name: "What you can ask", href: "#features"      },
+  { name: "Process",          href: "#how-it-works"  },
+  { name: "Reach",            href: "#infra"         },
+  { name: "Sources",          href: "#integrations"  },
+  { name: "Privacy",          href: "#security"      },
 ];
 
 export function Navigation() {
@@ -47,8 +47,8 @@ export function Navigation() {
         >
           {/* Logo */}
           <a href="#" className="flex items-center gap-2 group">
-            <span className={`font-display tracking-tight transition-all duration-500 ${isScrolled ? "text-xl text-foreground" : "text-2xl text-white"}`}>Tatsam</span>
-            <span className={`font-mono transition-all duration-500 ${isScrolled ? "text-[10px] mt-0.5 text-muted-foreground" : "text-xs mt-1 text-white/60"}`}>तत्सम्</span>
+            <span className={`font-display tracking-tight text-brown transition-all duration-500 ${isScrolled ? "text-xl" : "text-2xl"}`}>Tatsam</span>
+            <span className={`font-mono transition-all duration-500 text-brown/55 ${isScrolled ? "text-[10px] mt-0.5" : "text-xs mt-1"}`}>तत्सम्</span>
           </a>
 
           {/* Desktop Navigation */}
@@ -57,39 +57,37 @@ export function Navigation() {
               <a
                 key={link.name}
                 href={link.href}
-                className={`text-sm transition-colors duration-300 relative group ${isScrolled ? "text-foreground/70 hover:text-foreground" : "text-white/70 hover:text-white"}`}
+                className="text-sm text-brown/70 hover:text-brown transition-colors duration-300 relative group"
               >
                 {link.name}
-                <span className={`absolute -bottom-1 left-0 w-0 h-px transition-all duration-300 group-hover:w-full ${isScrolled ? "bg-foreground" : "bg-white"}`} />
+                <span className="absolute -bottom-1 left-0 w-0 h-px bg-maroon transition-all duration-300 group-hover:w-full" />
               </a>
             ))}
           </div>
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <Link href="/login" className={`transition-all duration-500 ${isScrolled ? "text-xs text-foreground/70 hover:text-foreground" : "text-sm text-white/70 hover:text-white"}`}>
+            <Link href="/login" className={`transition-all duration-500 text-brown/70 hover:text-brown ${isScrolled ? "text-xs" : "text-sm"}`}>
               Sign in
             </Link>
             <Button
               asChild
               size="sm"
-              className={`rounded-full transition-all duration-500 ${isScrolled ? "bg-foreground hover:bg-foreground/90 text-background px-4 h-8 text-xs" : "bg-white hover:bg-white/90 text-black px-6"}`}
+              className={`rounded-full transition-all duration-500 bg-maroon text-ivory hover:bg-maroon/90 ${isScrolled ? "px-4 h-8 text-xs" : "px-6"}`}
             >
-              <Link href="/dashboard/book">Book a reading</Link>
+              <Link href="/dashboard/ask">Ask a question</Link>
             </Button>
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className={`md:hidden p-2 transition-colors duration-500 ${isScrolled || isMobileMenuOpen ? "text-foreground" : "text-white"}`}
-            aria-label="Toggle menu"
+            onClick={() => setIsMobileMenuOpen(true)}
+            aria-label="Open menu"
+            className={`md:hidden p-2 text-brown/80 transition-opacity duration-200 ${
+              isMobileMenuOpen ? "opacity-0 pointer-events-none" : "opacity-100"
+            }`}
           >
-            {isMobileMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
+            <Menu className="w-6 h-6" />
           </button>
         </div>
 
@@ -105,6 +103,16 @@ export function Navigation() {
         style={{ top: 0 }}
       >
         <div className="flex flex-col h-full px-8 pt-28 pb-8">
+          {/* Close button — explicit top-right exit from the overlay */}
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-label="Close menu"
+            className="absolute top-5 right-5 z-10 w-11 h-11 rounded-full bg-brown text-ivory flex items-center justify-center shadow-sm"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
           {/* Navigation Links */}
           <div className="flex-1 flex flex-col justify-center gap-8">
             {navLinks.map((link, i) => (
@@ -145,8 +153,8 @@ export function Navigation() {
               asChild
               className="flex-1 bg-foreground text-background rounded-full h-14 text-base"
             >
-              <Link href="/dashboard/book" onClick={() => setIsMobileMenuOpen(false)}>
-                Book a reading
+              <Link href="/dashboard/ask" onClick={() => setIsMobileMenuOpen(false)}>
+                Ask a question
               </Link>
             </Button>
           </div>

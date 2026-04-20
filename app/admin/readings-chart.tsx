@@ -21,13 +21,15 @@ const BROWN = "#2B1F1A";
 
 export function ReadingsOverTimeChart({
   data,
+  rangeLabel = "30 days",
 }: {
   data: Array<{ date: string; count: number }>;
+  rangeLabel?: string;
 }) {
   return (
     <div className="rounded-xl bg-white border border-gold/30 p-5 md:p-6">
       <p className="text-xs font-mono text-brown/50 uppercase tracking-wider mb-4">
-        Readings over the last 30 days
+        Readings over the last {rangeLabel}
       </p>
       <div style={{ width: "100%", height: 260 }}>
         <ResponsiveContainer>

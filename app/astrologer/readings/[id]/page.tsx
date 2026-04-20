@@ -36,7 +36,7 @@ export default async function AstrologerReadingPage({
     await Promise.all([
       admin
         .from("readings")
-        .select("*, seeker:profiles!readings_user_id_fkey(id, full_name, email, phone, dob, tob, birth_place, language)")
+        .select("*, seeker:profiles!readings_seeker_profile_fk(id, full_name, email, phone, dob, tob, birth_place, language)")
         .eq("id", id)
         .maybeSingle(),
       admin.from("reading_events").select("*").eq("reading_id", id).order("created_at", { ascending: false }),

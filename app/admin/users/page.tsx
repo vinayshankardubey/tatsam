@@ -3,15 +3,31 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import type { Profile } from "@/lib/supabase/types";
 import { RoleSelect } from "./role-select";
 
-export default async function AdminUsersPage() {
+export default async function AdminUsersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; role?: string }>;
+}) {
   await requireRole("admin");
   const admin = createAdminClient();
-  const { data } = await admin
-    .from("profiles")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const { q, role } = await searchParams;
+  const search = (q ?? "").trim();
 
-  const users = (data ?? []) as Profile[];
+  let query = admin.from("profiles").select("*").order("created_at", { ascending: false });
+  if (role && ["seeker", "acharya", "admin"].includes(role)) {
+    query = query.eq("role", role);
+  }
+  const { data } = await query;
+
+  let users = (data ?? []) as Profile[];
+  if (search) {
+    const needle = search.toLowerCase();
+    users = users.filter((u) =>
+      [u.email, u.full_name, u.phone, u.birth_place].some((v) =>
+        (v ?? "").toLowerCase().includes(needle),
+      ),
+    );
+  }
   const counts = {
     seeker: users.filter((u) => u.role === "seeker").length,
     acharya: users.filter((u) => u.role === "acharya").length,
@@ -20,16 +36,59 @@ export default async function AdminUsersPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <p className="text-xs font-mono text-brown/50 uppercase tracking-[0.2em] mb-3">
-          Users
-        </p>
-        <h1 className="text-3xl md:text-4xl font-display text-brown">
-          {users.length} total
-        </h1>
-        <p className="text-sm text-brown/60 mt-2">
-          {counts.seeker} seekers · {counts.acharya} acharyas · {counts.admin} admins
-        </p>
+      <div className="flex items-end justify-between gap-6 flex-wrap">
+        <div>
+          <p className="text-xs font-mono text-brown/50 uppercase tracking-[0.2em] mb-3">
+            Users
+          </p>
+          <h1 className="text-3xl md:text-4xl font-display text-brown">
+            {users.length} {search || role ? "matching" : "total"}
+          </h1>
+          <p className="text-sm text-brown/60 mt-2">
+            {counts.seeker} seekers · {counts.acharya} acharyas · {counts.admin} admins
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 flex-wrap">
+          <form method="get" className="flex items-center gap-1 bg-white border border-gold/30 rounded-full px-3 h-9">
+            {role ? <input type="hidden" name="role" value={role} /> : null}
+            <input
+              type="search"
+              name="q"
+              defaultValue={search}
+              placeholder="Search email, name, phone, place…"
+              className="w-64 bg-transparent text-sm text-brown placeholder:text-brown/40 focus:outline-none"
+            />
+            {search ? (
+              <a
+                href={`/admin/users${role ? `?role=${role}` : ""}`}
+                className="text-xs text-brown/50 hover:text-maroon"
+              >
+                clear
+              </a>
+            ) : null}
+          </form>
+
+          <div className="flex items-center gap-1 bg-white border border-gold/30 rounded-full p-1">
+            {(["all", "seeker", "acharya", "admin"] as const).map((r) => {
+              const active = (r === "all" && !role) || r === role;
+              const url = new URLSearchParams();
+              if (r !== "all") url.set("role", r);
+              if (search) url.set("q", search);
+              return (
+                <a
+                  key={r}
+                  href={`/admin/users${url.toString() ? `?${url.toString()}` : ""}`}
+                  className={`text-xs px-3 h-7 inline-flex items-center rounded-full capitalize ${
+                    active ? "bg-maroon text-ivory" : "text-brown/70 hover:text-brown"
+                  }`}
+                >
+                  {r}
+                </a>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       <div className="rounded-xl bg-white border border-gold/30 overflow-x-auto">

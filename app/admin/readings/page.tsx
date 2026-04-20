@@ -16,15 +16,16 @@ type Row = Reading & {
 export default async function AdminReadingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; plan?: string }>;
+  searchParams: Promise<{ status?: string; plan?: string; q?: string }>;
 }) {
   await requireRole("admin");
   const admin = createAdminClient();
-  const { status, plan } = await searchParams;
+  const { status, plan, q } = await searchParams;
+  const search = (q ?? "").trim();
 
   let query = admin
     .from("readings")
-    .select("*, seeker:profiles!readings_user_id_fkey(id, full_name, email)")
+    .select("*, seeker:profiles!readings_seeker_profile_fk(id, full_name, email)")
     .order("created_at", { ascending: false });
 
   if (status && ["pending", "in_review", "delivered", "cancelled"].includes(status)) {
@@ -43,7 +44,21 @@ export default async function AdminReadingsPage({
       .order("full_name", { ascending: true }),
   ]);
 
-  const list = (rows ?? []) as Row[];
+  let list = (rows ?? []) as Row[];
+  if (search) {
+    const needle = search.toLowerCase();
+    list = list.filter((r) => {
+      const hay = [
+        r.seeker?.email ?? "",
+        r.seeker?.full_name ?? "",
+        r.acharya_name ?? "",
+        r.seeker_note ?? "",
+      ]
+        .join(" ")
+        .toLowerCase();
+      return hay.includes(needle);
+    });
+  }
   const acharyas = (acharyasRaw ?? []) as { id: string; full_name: string | null }[];
 
   return (
@@ -59,6 +74,25 @@ export default async function AdminReadingsPage({
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
+          <form method="get" className="flex items-center gap-1 bg-white border border-gold/30 rounded-full px-3 h-9">
+            {status ? <input type="hidden" name="status" value={status} /> : null}
+            {plan ? <input type="hidden" name="plan" value={plan} /> : null}
+            <input
+              type="search"
+              name="q"
+              defaultValue={search}
+              placeholder="Search seeker, acharya, note…"
+              className="w-56 bg-transparent text-sm text-brown placeholder:text-brown/40 focus:outline-none"
+            />
+            {search ? (
+              <a
+                href={`/admin/readings${statusPlanQuery({ status, plan })}`}
+                className="text-xs text-brown/50 hover:text-maroon"
+              >
+                clear
+              </a>
+            ) : null}
+          </form>
           <FilterGroup
             label="Status"
             current={status}
@@ -147,6 +181,14 @@ export default async function AdminReadingsPage({
       </div>
     </div>
   );
+}
+
+function statusPlanQuery(params: { status?: string; plan?: string }) {
+  const u = new URLSearchParams();
+  if (params.status) u.set("status", params.status);
+  if (params.plan) u.set("plan", params.plan);
+  const s = u.toString();
+  return s ? `?${s}` : "";
 }
 
 function FilterGroup({

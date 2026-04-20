@@ -4,26 +4,26 @@ import { useState, useEffect, useRef } from "react";
 
 const features = [
   {
-    title: "Gurukul-trained",
-    description: "Every acharya apprenticed under a traditional teacher for 10+ years.",
+    title: "Cited, always",
+    description: "Every answer names the text, chapter, and verse it drew from — so you can read it yourself.",
   },
   {
-    title: "Four-eyes review",
-    description: "Every report is cross-checked by a second acharya before delivery.",
+    title: "Cross-scriptural",
+    description: "Gita, Upanishads, Yoga Sutras, jyotish samhitas — read together, not in isolation.",
   },
   {
-    title: "Multi-system literacy",
-    description: "Fluent across Parashari, KP, Jaimini, and Chaldean numerology.",
+    title: "Plain English",
+    description: "Sanskrit kept as reference, never as a wall. You get the thought in your own language.",
   },
   {
-    title: "Plain-language counsel",
-    description: "No jargon, no fear. Clear guidance you can actually use.",
+    title: "No fear-selling",
+    description: "We won't weaponise dread to sell remedies. Clarity, not alarm.",
   },
 ];
 
 export function DevelopersSection() {
   const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef<HTMLSection>(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -66,28 +66,27 @@ export function DevelopersSection() {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-6">
-            <span className="w-8 h-px bg-foreground/30" />
-            Our acharyas
+          <span className="inline-flex items-center text-sm font-mono text-muted-foreground mb-6">
+            How we answer
           </span>
-          <h2 className="text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.9]">
-            Real humans.
+          <h2 className="text-4xl md:text-6xl lg:text-[128px] font-display tracking-tight leading-[1.02] lg:leading-[0.9]">
+            Real scripture.
             <br />
-            <span className="text-muted-foreground">Real lineage.</span>
+            <span className="text-muted-foreground">Living guidance.</span>
           </h2>
         </div>
 
-        {/* Description + Features — left half only */}
+        {/* Description + Features — full width on mobile, half on desktop so it
+            doesn't collide with the background image */}
         <div
-          className={`max-w-[50%] transition-all duration-700 delay-100 ${
+          className={`lg:max-w-[50%] transition-all duration-700 delay-100 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-md">
-            Your chart is never read by software alone. A seasoned acharya from
-            our Kashi, Ujjain, and Kerala circles reads every report by hand.
+          <p className="text-lg lg:text-xl text-muted-foreground mb-10 lg:mb-12 leading-relaxed lg:max-w-md">
+            Your question is matched to passages across hundreds of classical texts — the Bhagavad Gita, the Upanishads, the jyotish samhitas — and answered in plain English, with every citation intact.
           </p>
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
             {features.map((feature, index) => (
               <div
                 key={feature.title}

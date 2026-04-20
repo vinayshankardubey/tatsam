@@ -7,22 +7,22 @@ const metrics = [
     value: 52184,
     suffix: "+",
     prefix: "",
-    label: "Charts cast for seekers",
-    sublabel: "across 40+ countries",
+    label: "Questions answered",
+    sublabel: "from seekers across 40+ countries",
   },
   {
     value: 4,
     suffix: ".9 ★",
     prefix: "",
     label: "Seeker rating",
-    sublabel: "from verified readings",
+    sublabel: "from verified answers",
   },
   {
-    value: 12,
-    suffix: " yrs",
+    value: 200,
+    suffix: "+",
     prefix: "",
-    label: "Lineage of practice",
-    sublabel: "avg experience per acharya",
+    label: "Classical sources",
+    sublabel: "indexed and cross-referenced",
   },
 ];
 
@@ -259,7 +259,7 @@ export function MetricsSection() {
             <h2 className={`text-6xl md:text-7xl lg:text-[140px] font-display tracking-tight leading-[0.95] transition-all duration-1000 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}>
-              Trusted by
+              Read by
               <br />
               <span className="text-muted-foreground">thoughtful seekers.</span>
             </h2>
@@ -328,9 +328,9 @@ export function MetricsSection() {
         <div className={`mt-16 pt-8 border-t border-foreground/10 flex flex-wrap items-center gap-x-12 gap-y-4 text-sm font-mono text-muted-foreground transition-all duration-1000 delay-500 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
-          <span>Vedic · Parashari</span>
-          <span>KP (Krishnamurti) system</span>
-          <span>Nadi astrology</span>
+          <span>Bhagavad Gita · Upanishads</span>
+          <span>Brihat Parashara Hora · Jaimini</span>
+          <span>Yoga Sutras · Brihat Samhita</span>
           <span>Chaldean · Pythagorean numerology</span>
           <span className="text-foreground">+ Lal Kitab remedies</span>
         </div>

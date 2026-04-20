@@ -5,32 +5,32 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 
 const testimonials = [
   {
-    quote: "The report read me better than I read myself. Nothing vague, nothing scary — just clear, kind guidance about my Shani dasha.",
+    quote: "I asked whether to take a job that felt too good to be true. The answer pointed me to Gita 2.47 — and by the end, I understood the warning, not the promise. Saved me a painful year.",
     author: "Ananya Iyer",
     role: "Product designer",
     company: "Bengaluru",
-    metric: { value: "42", label: "Pages of insight" },
+    metric: { value: "Gita 2.47", label: "The verse that landed" },
   },
   {
-    quote: "I've tried three other platforms. Tatsam is the only one that didn't push gemstones or pujas I didn't need. Just honest counsel.",
+    quote: "The only place I've asked a question about money and didn't get pushed a gemstone. Just the Isha Upanishad and a practical note about my Shani dasha.",
     author: "Rohan Mehta",
     role: "Founder",
     company: "Mumbai",
     metric: { value: "0", label: "Upsells, ever" },
   },
   {
-    quote: "My numerology report explained exactly why certain names and dates felt heavy. My acharya was patient and kind on the call.",
+    quote: "I asked about the meaning of my name and life-path number. Got a Chaldean + Pythagorean cross-read, with citations. It was specific in a way I didn't expect from software.",
     author: "Priya Nair",
     role: "Therapist",
     company: "Kochi",
-    metric: { value: "9/9", label: "Numbers decoded" },
+    metric: { value: "Cited", label: "Every answer, sourced" },
   },
   {
-    quote: "We did Guna Milan before our engagement. The analysis gave my family real clarity — and our marriage the right muhurat.",
+    quote: "Before our engagement I asked about compatibility. Tatsam walked through Brihat Samhita and numerology side by side. It gave me language for a conversation with my family.",
     author: "Aditya Sharma",
     role: "Software engineer",
     company: "Delhi NCR",
-    metric: { value: "36/36", label: "Compatibility read" },
+    metric: { value: "36", label: "Koota points decoded" },
   },
 ];
 
@@ -92,15 +92,14 @@ export function TestimonialsSection() {
         {/* Header */}
         <div className="flex items-center justify-between mb-20">
           <div>
-            <span className="inline-flex items-center gap-3 text-sm font-mono text-background/40 mb-4">
-              <span className="w-12 h-px bg-background/20" />
+            <span className="inline-flex items-center text-sm font-mono text-background/40 mb-4">
               Seekers speak
             </span>
             <h2 className={`text-4xl lg:text-5xl font-display transition-all duration-1000 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}>
               Words from those
-              <span className="text-background/40"> we&rsquo;ve read for.</span>
+              <span className="text-background/40"> who&rsquo;ve asked.</span>
             </h2>
           </div>
           

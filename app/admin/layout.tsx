@@ -1,51 +1,60 @@
-import Link from "next/link";
 import { requireRole } from "@/lib/supabase/require-role";
-import { signOut } from "./actions";
+import {
+  DashboardSidebar,
+  type NavGroup,
+  type MobileTab,
+} from "@/components/dashboard/sidebar";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  await requireRole("admin");
+  const { profile } = await requireRole("admin");
+
+  const fullName = profile.full_name ?? "Admin";
+  const userInitial = (fullName.trim()[0] ?? "A").toUpperCase();
+
+  const groups: NavGroup[] = [
+    {
+      label: "Operations",
+      items: [
+        { href: "/admin",          label: "Overview", icon: "layout-dashboard", exact: true },
+        { href: "/admin/readings", label: "Readings", icon: "file-text" },
+        { href: "/admin/users",    label: "Users",    icon: "users" },
+      ],
+    },
+    {
+      label: "Also yours",
+      items: [
+        { href: "/astrologer", label: "Acharya view", icon: "user-cog" },
+        { href: "/dashboard",  label: "Seeker view",  icon: "user" },
+      ],
+    },
+  ];
+
+  const mobileTabs: MobileTab[] = [
+    { href: "/admin",          label: "Overview", icon: "layout-dashboard", exact: true },
+    { href: "/admin/readings", label: "Readings", icon: "file-text" },
+    { href: "/admin/users",    label: "Users",    icon: "users" },
+    { href: "/dashboard/profile", label: "Me",    icon: "user", isProfile: true },
+  ];
 
   return (
     <div className="min-h-screen bg-ivory text-brown">
-      <header className="sticky top-0 z-30 bg-ivory/80 backdrop-blur-xl border-b border-gold/20">
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
-          <Link href="/admin" className="flex items-center gap-2">
-            <span className="text-xl font-display text-brown">Tatsam</span>
-            <span className="text-[10px] text-brown/50 font-mono tracking-wider uppercase">
-              Admin
-            </span>
-          </Link>
-          <nav className="flex items-center gap-8 text-sm">
-            <Link href="/admin" className="text-brown/70 hover:text-brown">
-              Overview
-            </Link>
-            <Link href="/admin/readings" className="text-brown/70 hover:text-brown">
-              Readings
-            </Link>
-            <Link href="/admin/users" className="text-brown/70 hover:text-brown">
-              Users
-            </Link>
-            <Link href="/astrologer" className="text-brown/70 hover:text-brown">
-              Acharya view
-            </Link>
-            <form action={signOut}>
-              <button
-                type="submit"
-                className="text-brown/70 hover:text-maroon"
-              >
-                Sign out
-              </button>
-            </form>
-          </nav>
-        </div>
-      </header>
+      <DashboardSidebar
+        badge="Admin"
+        groups={groups}
+        mobileTabs={mobileTabs}
+        userLabel={fullName}
+        userEmail={profile.email}
+        userInitial={userInitial}
+      />
 
-      <main className="max-w-[1400px] mx-auto px-6 lg:px-10 py-12 lg:py-16">
-        {children}
+      <main className="lg:pl-[240px] pb-24 lg:pb-0">
+        <div className="max-w-[1280px] mx-auto px-6 lg:px-10 py-8 lg:py-14">
+          {children}
+        </div>
       </main>
     </div>
   );

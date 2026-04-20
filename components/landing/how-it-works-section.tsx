@@ -5,37 +5,32 @@ import { useEffect, useRef, useState } from "react";
 const steps = [
   {
     number: "01",
-    title: "Share",
-    subtitle: "your details",
-    description: "Your name, date, exact time and place of birth — the four coordinates from which your entire chart is drawn.",
-    code: `/* Seeker */
-name:  "—",
-dob:   "1994-08-17",
-tob:   "06:42 IST",
-place: "Varanasi, India"`,
+    title: "Ask",
+    subtitle: "in your own words",
+    description: "Type a question the way you'd ask a wise friend. Life, love, timing, your chart, your numbers — nothing is too small.",
+    code: `/* You */
+question: "Should I take the role in Pune, or wait?",
+context:  "dob 1994-08-17 · life path 3"`,
   },
   {
     number: "02",
-    title: "Acharya",
-    subtitle: "reads your chart",
-    description: "A seasoned astrologer studies your kundli, dashas, and numerology — cross-checking across Vedic and numeric systems.",
-    code: `/* Analysis */
-lagna:       "Kanya"
-nakshatra:   "Hasta"
-dasha:       "Shukra Mahadasha"
-lifePath:    3
-destiny:     7`,
+    title: "Consult",
+    subtitle: "the ancient texts",
+    description: "Tatsam reads your question against the classical corpus — Gita, Upanishads, Brihat Parashara, Yoga Sutras, and more — and draws the passages that speak to it.",
+    code: `/* Sources consulted */
+gita.2.47      ✓ nishkama karma
+brihat.6.12    ✓ career & Saturn
+upanishad.IU   ✓ right renunciation`,
   },
   {
     number: "03",
     title: "Receive",
-    subtitle: "your report",
-    description: "A personal PDF report plus an optional voice note or call — explaining what you’re living through and how to move with it.",
-    code: `/* Delivery */
-report.pdf    ✓ 42 pages
-audio.mp3     ✓ 18 minutes
-remedies.md   ✓ 9 practices
-call.slot     ✓ scheduled`,
+    subtitle: "a grounded answer",
+    description: "An answer in plain English, with citations to the verse or chapter it comes from. Kept gentle, never alarming, always practical.",
+    code: `/* Answer */
+summary:    "Take it — but on one condition..."
+source:     Bhagavad Gita, 2.47
+practice:   "journal for 9 days before Mar 3"`,
   },
 ];
 
@@ -67,9 +62,9 @@ export function HowItWorksSection() {
     <section
       id="how-it-works"
       ref={sectionRef}
-      className="relative py-24 lg:py-32 bg-[oklch(0.09_0.01_260)] text-white overflow-hidden"
+      className="relative py-24 lg:py-32 bg-brown text-ivory overflow-hidden"
     >
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-white/[0.02] blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-gold/[0.06] blur-[100px] pointer-events-none" />
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12">
         {/* Header — titre + image cerisier */}
@@ -77,8 +72,7 @@ export function HowItWorksSection() {
           {/* Titre colonne gauche */}
           <div className="overflow-hidden pb-0 lg:pb-32">
             <div className={`transition-all duration-1000 ${isVisible ? "translate-x-0 opacity-100" : "-translate-x-12 opacity-0"}`}>
-              <span className="inline-flex items-center gap-3 text-sm font-mono text-white/40 mb-8">
-                <span className="w-12 h-px bg-white/20" />
+              <span className="inline-flex items-center text-sm font-mono text-ivory/50 mb-8">
                 Process
               </span>
             </div>
@@ -86,9 +80,9 @@ export function HowItWorksSection() {
             <h2 className={`text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.85] transition-all duration-1000 delay-100 ${
               isVisible ? "translate-y-0 opacity-100" : "translate-y-16 opacity-0"
             }`}>
-              <span className="block">Share.</span>
-              <span className="block text-white/30">Read.</span>
-              <span className="block text-white/10">Receive.</span>
+              <span className="block text-ivory">Ask.</span>
+              <span className="block text-ivory/35">Consult.</span>
+              <span className="block text-ivory/15">Receive.</span>
             </h2>
           </div>
 
@@ -100,10 +94,10 @@ export function HowItWorksSection() {
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/tree-uAia6REvB137CQyHFCf0za3O6h2zKO.png"
               alt=""
               aria-hidden="true"
-              className="absolute bottom-0 left-0 w-full h-full object-contain object-bottom"
+              className="absolute bottom-0 left-0 w-full h-full object-contain object-bottom opacity-80"
             />
             {/* Fade sur le bord gauche */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[oklch(0.09_0.01_260)] via-transparent to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-r from-brown via-transparent to-transparent pointer-events-none" />
           </div>
         </div>
 
@@ -115,50 +109,47 @@ export function HowItWorksSection() {
               type="button"
               onClick={() => setActiveStep(index)}
               className={`relative text-left p-8 lg:p-12 border transition-all duration-500 ${
-                activeStep === index 
-                  ? "bg-[#000000] border-white/60" 
-                  : "bg-[#000000] border-white/25 hover:border-white/50"
+                activeStep === index
+                  ? "bg-ivory/5 border-gold/60"
+                  : "bg-ivory/[0.03] border-ivory/20 hover:border-gold/40"
               }`}
             >
               {/* Step number with animated line */}
               <div className="flex items-center gap-4 mb-8">
                 <span className={`text-4xl font-display transition-colors duration-300 ${
-                  activeStep === index ? "text-[#eca8d6]" : "text-white/20"
+                  activeStep === index ? "text-gold" : "text-ivory/25"
                 }`}>
                   {step.number}
                 </span>
-                <div className="flex-1 h-px bg-white/10 overflow-hidden">
+                <div className="flex-1 h-px bg-ivory/15 overflow-hidden">
                   {activeStep === index && (
-                    <div className="h-full bg-[#eca8d6]/50 animate-progress" />
+                    <div className="h-full bg-gold/60 animate-progress" />
                   )}
                 </div>
               </div>
 
               {/* Title */}
-              <h3 className="text-3xl lg:text-4xl font-display mb-2">
+              <h3 className="text-3xl lg:text-4xl font-display mb-2 text-ivory">
                 {step.title}
               </h3>
-              <span className="text-xl text-white/40 font-display block mb-6">
+              <span className="text-xl text-ivory/50 font-display block mb-6">
                 {step.subtitle}
               </span>
 
               {/* Description */}
-              <p className={`text-white/60 leading-relaxed transition-opacity duration-300 ${
-                activeStep === index ? "opacity-100" : "opacity-60"
+              <p className={`text-ivory/65 leading-relaxed transition-opacity duration-300 ${
+                activeStep === index ? "opacity-100" : "opacity-70"
               }`}>
                 {step.description}
               </p>
 
               {/* Active indicator */}
-              <div className={`absolute bottom-0 left-0 right-0 h-1 bg-[#eca8d6] transition-transform duration-500 origin-left ${
+              <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gold transition-transform duration-500 origin-left ${
                 activeStep === index ? "scale-x-100" : "scale-x-0"
               }`} />
             </button>
           ))}
         </div>
-
-        {/* Code Preview - Large terminal */}
-        
       </div>
 
       <style jsx>{`

@@ -6,32 +6,32 @@ import { ArrowRight, Check, Zap } from "lucide-react";
 const plans = [
   {
     name: "Darshan",
-    description: "A first glimpse into your chart",
-    price: { monthly: 499, annual: 499 },
+    description: "For curious seekers",
+    price: { monthly: 0, annual: 0 },
     features: [
-      "Janma Kundli snapshot",
-      "Life Path & Destiny number",
-      "Current dasha at a glance",
-      "8-page PDF report",
-      "Email delivery in 48hr",
+      "5 questions a month",
+      "Daily panchang & moon phase",
+      "Your sun sign, life path, numbers",
+      "Cosmic calendar",
+      "Citations on every answer",
     ],
-    cta: "Begin reading",
+    cta: "Start free",
     highlight: false,
   },
   {
     name: "Signature",
-    description: "The full Tatsam reading",
-    price: { monthly: 2499, annual: 2499 },
+    description: "Unlimited access to the scriptures",
+    price: { monthly: 499, annual: 499 },
     features: [
-      "Detailed Janma Kundli & Navamsa",
-      "Full numerology: 9 core numbers",
-      "Year-ahead dasha forecast",
-      "Career, relationships, finance",
-      "Personalised remedies & muhurats",
-      "40-page bound PDF",
-      "20-min voice note from your acharya",
+      "Unlimited questions",
+      "Saved sessions & thread history",
+      "Sanskrit + English citations",
+      "Detailed kundli & numerology tools",
+      "Guna Milan compatibility",
+      "Personal muhurat finder",
+      "Export your answers as PDF",
     ],
-    cta: "Book Signature",
+    cta: "Go Signature",
     highlight: true,
   },
   {
@@ -40,13 +40,11 @@ const plans = [
     price: { monthly: null, annual: null },
     features: [
       "Everything in Signature",
-      "60-min live call with your acharya",
-      "Compatibility report for partner",
-      "Child-name & muhurat consulting",
-      "Annual renewal & check-in",
-      "Priority acharya access",
-      "Heirloom printed keepsake",
-      "Private WhatsApp line",
+      "Extended context across family charts",
+      "Private corpus: add your own teacher's notes",
+      "Annual review with citations index",
+      "Priority answer latency",
+      "Bound keepsake of your top questions",
     ],
     cta: "Request Legacy",
     highlight: false,
@@ -76,16 +74,15 @@ export function PricingSection() {
         {/* Header - Dramatic offset */}
         <div className="grid lg:grid-cols-12 gap-8 mb-20">
           <div className="lg:col-span-7">
-            <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-8">
-              <span className="w-12 h-px bg-foreground/30" />
+            <span className="inline-flex items-center text-sm font-mono text-muted-foreground mb-8">
               Pricing
             </span>
             <h2 className={`text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.9] transition-all duration-1000 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}>
-              Choose your
+              Ask as much
               <br />
-              <span className="text-stroke">reading.</span>
+              <span className="text-stroke">as you need.</span>
             </h2>
           </div>
           
@@ -112,19 +109,19 @@ export function PricingSection() {
           <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
             <span className="flex items-center gap-2">
               <Check className="w-4 h-4 text-[#C9A35A]" />
-              Human-read, never AI-generated
+              Scripture-grounded, cited answers
             </span>
             <span className="flex items-center gap-2">
               <Check className="w-4 h-4 text-[#C9A35A]" />
-              Unlimited follow-up questions
+              Your data is never used for training
             </span>
             <span className="flex items-center gap-2">
               <Check className="w-4 h-4 text-[#C9A35A]" />
-              Refund if you&rsquo;re not served well
+              Cancel anytime, download your history
             </span>
           </div>
           <a href="#" className="text-sm underline underline-offset-4 hover:text-foreground transition-colors">
-            Compare all readings
+            Compare every plan
           </a>
         </div>
       </div>

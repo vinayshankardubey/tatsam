@@ -1,0 +1,20 @@
+import { createClient } from "@supabase/supabase-js";
+const URL  = "http://127.0.0.1:54421";
+const SR   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU";
+const ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
+const admin = createClient(URL, SR, { auth:{persistSession:false}});
+const anon = createClient(URL, ANON, { auth:{persistSession:false}});
+const link = await admin.auth.admin.generateLink({ type:"magiclink", email:"anika@example.com" });
+const v = await anon.auth.verifyOtp({ token_hash: link.data.properties.hashed_token, type:"magiclink" });
+const s = v.data.session;
+const cookie = `sb-127-auth-token=${encodeURIComponent(JSON.stringify({ access_token:s.access_token, token_type:"bearer", expires_in:3600, expires_at: Math.floor(Date.now()/1000)+3600, refresh_token:s.refresh_token, user:v.data.user }))}`;
+const res = await fetch("http://127.0.0.1:3000/dashboard", { headers:{cookie}, redirect:"manual" });
+const t = await res.text();
+// Markers to verify
+console.log("fixed bottom-0:    ", t.includes("fixed bottom-0"));
+console.log("md:hidden fixed bottom-0:", t.includes('md:hidden fixed bottom-0'));
+console.log("Menu label:        ", t.includes(">Menu<"));
+console.log("env(safe-area-inset-bottom):", t.includes("safe-area-inset-bottom"));
+console.log("pb-24 md:pb-0:     ", t.includes("pb-24"));
+const idx = t.indexOf("fixed bottom-0");
+if (idx > -1) console.log("--- context ---\n" + t.slice(idx, idx+600));

@@ -52,14 +52,13 @@ export function CtaSection() {
               {/* Left content */}
               <div className="flex-1">
                 <h2 className="text-6xl md:text-7xl lg:text-[72px] font-display tracking-tight mb-8 leading-[0.95]">
-                  Ready to meet
+                  Ready to ask
                   <br />
-                  your chart?
+                  your first question?
                 </h2>
 
                 <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-xl">
-                  Share your birth details. A Tatsam acharya will read your kundli
-                  and numbers, and send a report crafted for you alone.
+                  Type it in your own words. Tatsam reads your question against the Bhagavad Gita, the Upanishads, and the classical astrological samhitas — and sends back a grounded, cited answer.
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-start gap-4">
@@ -68,8 +67,8 @@ export function CtaSection() {
                     size="lg"
                     className="bg-foreground hover:bg-foreground/90 text-background px-8 h-14 text-base rounded-full group"
                   >
-                    <Link href="/dashboard/book">
-                      Book your reading
+                    <Link href="/dashboard/ask">
+                      Ask your first question
                       <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
                     </Link>
                   </Button>
@@ -79,12 +78,12 @@ export function CtaSection() {
                     variant="outline"
                     className="h-14 px-8 text-base rounded-full border-foreground/20 hover:bg-foreground/5"
                   >
-                    <Link href="/login">Talk to an acharya</Link>
+                    <Link href="/login">See how it works</Link>
                   </Button>
                 </div>
 
                 <p className="text-sm text-muted-foreground mt-8 font-mono">
-                  A free numerology snapshot with every first reading
+                  5 free questions every month — no card required
                 </p>
               </div>
 

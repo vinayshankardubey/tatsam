@@ -12,6 +12,7 @@ import {
   EVENT_LABEL,
 } from "@/lib/supabase/types";
 import { MessageThread } from "./message-thread";
+import { STAGE_ORDER, STAGE_LABEL, stageIndex, timeAgo } from "@/lib/reading-helpers";
 
 export default async function ReadingDetailPage({
   params,
@@ -61,7 +62,7 @@ export default async function ReadingDetailPage({
       </Link>
 
       {/* Header */}
-      <div className="mb-10 flex items-start justify-between gap-6 flex-wrap">
+      <div className="mb-8 flex items-start justify-between gap-6 flex-wrap">
         <div>
           <p className="text-xs font-mono text-brown/50 uppercase tracking-[0.2em] mb-3">
             Reading
@@ -72,11 +73,11 @@ export default async function ReadingDetailPage({
           <div className="mt-4 flex items-center gap-3 flex-wrap">
             <StatusPill status={r.status} />
             <span className="text-sm text-brown/60">
-              Requested {formatDate(r.created_at)}
+              Requested {timeAgo(r.created_at)}
             </span>
             {r.delivered_at ? (
               <span className="text-sm text-brown/60">
-                • Delivered {formatDate(r.delivered_at)}
+                • Delivered {timeAgo(r.delivered_at)}
               </span>
             ) : null}
           </div>
@@ -94,6 +95,50 @@ export default async function ReadingDetailPage({
           </a>
         ) : null}
       </div>
+
+      {/* Stage tracker */}
+      {r.status !== "cancelled" ? (
+        <section className="mb-12 rounded-xl bg-white border border-gold/30 p-5 md:p-6">
+          <div className="flex items-center gap-2">
+            {STAGE_ORDER.map((s, i) => {
+              const active = stageIndex(r.status);
+              const done = i < active;
+              const here = i === active;
+              return (
+                <div key={s} className="flex items-center gap-2 flex-1">
+                  <span
+                    className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-mono shrink-0 ${
+                      done
+                        ? "bg-gold text-ivory"
+                        : here
+                          ? "bg-maroon text-ivory"
+                          : "bg-gold/15 text-brown/50"
+                    }`}
+                  >
+                    {done ? "✓" : i + 1}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p
+                      className={`text-xs font-mono uppercase tracking-wider ${
+                        here ? "text-brown" : done ? "text-brown/60" : "text-brown/40"
+                      }`}
+                    >
+                      {STAGE_LABEL[s]}
+                    </p>
+                  </div>
+                  {i < STAGE_ORDER.length - 1 ? (
+                    <span
+                      className={`flex-1 h-0.5 ${
+                        done || here ? "bg-gold" : "bg-gold/20"
+                      }`}
+                    />
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
 
       {/* Summary from acharya */}
       {r.acharya_summary ? (

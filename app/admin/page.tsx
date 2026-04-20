@@ -8,10 +8,20 @@ import {
   STATUS_LABEL,
 } from "@/lib/supabase/types";
 import { ReadingsOverTimeChart, PlanBreakdownChart } from "./readings-chart";
+import { timeAgo } from "@/lib/reading-helpers";
 
-export default async function AdminOverviewPage() {
+const RANGES = { "7": 7, "30": 30, "90": 90 } as const;
+type Range = keyof typeof RANGES;
+
+export default async function AdminOverviewPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ range?: string }>;
+}) {
   await requireRole("admin");
   const admin = createAdminClient();
+  const { range } = await searchParams;
+  const days = RANGES[(range as Range) ?? "30"] ?? 30;
 
   const [{ data: profiles }, { data: readings }, { data: acharyaStats }] =
     await Promise.all([
@@ -34,6 +44,19 @@ export default async function AdminOverviewPage() {
     .filter((r) => r.status === "delivered")
     .reduce((acc, r) => acc + (r.price_inr ?? 0), 0);
 
+  // Avg time-to-deliver across all delivered readings (hours).
+  const avgDeliverHours = (() => {
+    const hs = delivered
+      .filter((r) => r.delivered_at)
+      .map(
+        (r) =>
+          (new Date(r.delivered_at!).getTime() - new Date(r.created_at).getTime()) /
+          3_600_000,
+      );
+    if (hs.length === 0) return null;
+    return Math.round(hs.reduce((a, b) => a + b, 0) / hs.length);
+  })();
+
   // Status funnel
   const funnel = {
     pending: rs.filter((r) => r.status === "pending").length,
@@ -42,24 +65,23 @@ export default async function AdminOverviewPage() {
     cancelled: rs.filter((r) => r.status === "cancelled").length,
   };
 
-  // Readings over the last 30 days
-  const days: Array<{ date: string; count: number }> = [];
+  // Readings per day over selected range.
+  const bucket: Array<{ date: string; count: number }> = [];
   const now = new Date();
   now.setHours(0, 0, 0, 0);
-  for (let i = 29; i >= 0; i--) {
+  for (let i = days - 1; i >= 0; i--) {
     const d = new Date(now);
     d.setDate(d.getDate() - i);
-    const iso = d.toISOString().slice(0, 10);
-    days.push({ date: iso, count: 0 });
+    bucket.push({ date: d.toISOString().slice(0, 10), count: 0 });
   }
-  const dayIdx = new Map(days.map((d, i) => [d.date, i]));
+  const dayIdx = new Map(bucket.map((d, i) => [d.date, i]));
   for (const r of rs) {
     const key = r.created_at.slice(0, 10);
     const i = dayIdx.get(key);
-    if (i !== undefined) days[i].count += 1;
+    if (i !== undefined) bucket[i].count += 1;
   }
 
-  // Plan mix
+  // Plan mix (overall, not range-bound — more stable signal)
   const planMix = (["darshan", "signature", "legacy"] as const).map((p) => ({
     name: PLAN_META[p].label,
     value: rs.filter((r) => r.plan === p).length,
@@ -70,28 +92,36 @@ export default async function AdminOverviewPage() {
     .map((a) => {
       const assigned = rs.filter((r) => r.acharya_id === a.id);
       const deliveredByA = assigned.filter((r) => r.status === "delivered").length;
+      const rev = assigned
+        .filter((r) => r.status === "delivered")
+        .reduce((acc, r) => acc + (r.price_inr ?? 0), 0);
       return {
         id: a.id,
         name: a.full_name ?? "—",
         assigned: assigned.length,
         delivered: deliveredByA,
+        revenue: rev,
       };
     })
     .sort((a, b) => b.delivered - a.delivered);
 
   return (
     <div className="space-y-14">
-      <section>
-        <p className="text-xs font-mono text-brown/50 uppercase tracking-[0.2em] mb-3">
-          Overview
-        </p>
-        <h1 className="text-4xl md:text-5xl font-display text-brown leading-tight">
-          Tatsam at a glance.
-        </h1>
+      <section className="flex items-end justify-between gap-6 flex-wrap">
+        <div>
+          <p className="text-xs font-mono text-brown/50 uppercase tracking-[0.2em] mb-3">
+            Overview
+          </p>
+          <h1 className="text-4xl md:text-5xl font-display text-brown leading-tight">
+            Tatsam at a glance.
+          </h1>
+        </div>
+
+        <RangeToggle current={String(days)} />
       </section>
 
       {/* Stat cards */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <section className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Stat label="Seekers" value={seekers.toLocaleString("en-IN")} tone="brown" />
         <Stat label="Readings" value={totalReadings.toLocaleString("en-IN")} tone="maroon" />
         <Stat label="Delivered" value={delivered.length.toLocaleString("en-IN")} tone="gold" />
@@ -100,11 +130,16 @@ export default async function AdminOverviewPage() {
           value={`₹${revenue.toLocaleString("en-IN")}`}
           tone="amber"
         />
+        <Stat
+          label="Avg time to deliver"
+          value={avgDeliverHours == null ? "—" : hoursPretty(avgDeliverHours)}
+          tone="brown"
+        />
       </section>
 
       {/* Charts */}
       <section className="grid lg:grid-cols-[2fr_1fr] gap-4">
-        <ReadingsOverTimeChart data={days} />
+        <ReadingsOverTimeChart data={bucket} rangeLabel={`${days} days`} />
         <PlanBreakdownChart data={planMix} />
       </section>
 
@@ -139,12 +174,13 @@ export default async function AdminOverviewPage() {
                 <th className="text-right font-mono font-normal px-5 py-3">Assigned</th>
                 <th className="text-right font-mono font-normal px-5 py-3">Delivered</th>
                 <th className="text-right font-mono font-normal px-5 py-3">Conversion</th>
+                <th className="text-right font-mono font-normal px-5 py-3">Revenue</th>
               </tr>
             </thead>
             <tbody>
               {acharyaPerf.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-5 py-6 text-center text-brown/55">
+                  <td colSpan={5} className="px-5 py-6 text-center text-brown/55">
                     No acharyas yet.
                   </td>
                 </tr>
@@ -158,6 +194,9 @@ export default async function AdminOverviewPage() {
                       {a.assigned
                         ? `${Math.round((a.delivered / a.assigned) * 100)}%`
                         : "—"}
+                    </td>
+                    <td className="px-5 py-3 text-right text-brown/70">
+                      {a.revenue ? `₹${a.revenue.toLocaleString("en-IN")}` : "—"}
                     </td>
                   </tr>
                 ))
@@ -181,7 +220,7 @@ export default async function AdminOverviewPage() {
           {rs.slice(0, 5).map((r) => (
             <Link
               key={r.id}
-              href={`/admin/readings?highlight=${r.id}`}
+              href={`/astrologer/readings/${r.id}`}
               className="flex items-center justify-between gap-4 p-4 rounded-xl bg-white border border-gold/30 hover:border-maroon/50 transition-colors"
             >
               <div className="min-w-0">
@@ -189,7 +228,7 @@ export default async function AdminOverviewPage() {
                   {PLAN_META[r.plan].label} · {r.acharya_name ?? "Unassigned"}
                 </p>
                 <p className="text-xs text-brown/55">
-                  {STATUS_LABEL[r.status]} · {formatDate(r.created_at)}
+                  {STATUS_LABEL[r.status]} · {timeAgo(r.created_at)}
                 </p>
               </div>
               <span className="text-brown/40">→</span>
@@ -204,6 +243,37 @@ export default async function AdminOverviewPage() {
       </section>
     </div>
   );
+}
+
+function RangeToggle({ current }: { current: string }) {
+  const options: Array<{ value: Range; label: string }> = [
+    { value: "7", label: "7d" },
+    { value: "30", label: "30d" },
+    { value: "90", label: "90d" },
+  ];
+  return (
+    <div className="flex items-center gap-1 bg-white border border-gold/30 rounded-full p-1">
+      {options.map((o) => {
+        const active = current === String(RANGES[o.value]);
+        return (
+          <Link
+            key={o.value}
+            href={`/admin?range=${o.value}`}
+            className={`text-xs px-3 h-7 inline-flex items-center rounded-full ${
+              active ? "bg-maroon text-ivory" : "text-brown/70 hover:text-brown"
+            }`}
+          >
+            {o.label}
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+function hoursPretty(h: number): string {
+  if (h < 24) return `${h}h`;
+  return `${Math.round(h / 24)}d`;
 }
 
 function Stat({
@@ -254,12 +324,4 @@ function FunnelCell({ label, value, total }: { label: string; value: number; tot
       </div>
     </div>
   );
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
 }

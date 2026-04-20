@@ -4,8 +4,8 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Tatsam — Vedic Astrology & Numerology Readings',
-  description: 'Personalised Vedic astrology and numerology reports crafted by seasoned acharyas. Birth charts, compatibility, life-path numbers, and guided remedies — delivered with care.',
+  title: 'Tatsam — Ask the Scriptures. Receive Clear Answers.',
+  description: 'Ask your questions — about your chart, your numbers, your life — and receive grounded answers drawn from the Bhagavad Gita, the Upanishads, Vedic samhitas and classical astrological texts.',
   generator: 'Tatsam',
 }
 

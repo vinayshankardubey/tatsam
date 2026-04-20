@@ -1,4 +1,5 @@
 import { Navigation } from "@/components/landing/navigation";
+import { LandingBottomNav } from "@/components/landing/bottom-nav";
 import { HeroSection } from "@/components/landing/hero-section";
 import { FeaturesSection } from "@/components/landing/features-section";
 import { HowItWorksSection } from "@/components/landing/how-it-works-section";
@@ -14,7 +15,7 @@ import { FooterSection } from "@/components/landing/footer-section";
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen overflow-x-hidden">
+    <main id="top" className="relative min-h-screen overflow-x-hidden">
       <Navigation />
       <HeroSection />
       <FeaturesSection />
@@ -27,6 +28,7 @@ export default function Home() {
       <TestimonialsSection />
       <PricingSection />
       <FooterSection />
+      <LandingBottomNav />
     </main>
   );
 }
