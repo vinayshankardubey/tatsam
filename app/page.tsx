@@ -1,8 +1,8 @@
 import { Navigation } from "@/components/landing/navigation";
 import { LandingBottomNav } from "@/components/landing/bottom-nav";
+import { getCurrentUser } from "@/lib/supabase/current-user";
 import { HeroSection } from "@/components/landing/hero-section";
 import { FeaturesSection } from "@/components/landing/features-section";
-import { HowItWorksSection } from "@/components/landing/how-it-works-section";
 import { InfrastructureSection } from "@/components/landing/infrastructure-section";
 import { MetricsSection } from "@/components/landing/metrics-section";
 import { IntegrationsSection } from "@/components/landing/integrations-section";
@@ -13,13 +13,14 @@ import { PricingSection } from "@/components/landing/pricing-section";
 import { CtaSection } from "@/components/landing/cta-section";
 import { FooterSection } from "@/components/landing/footer-section";
 
-export default function Home() {
+export default async function Home() {
+  const user = await getCurrentUser();
+  const isSignedIn = !!user;
   return (
     <main id="top" className="relative min-h-screen overflow-x-hidden">
-      <Navigation />
+      <Navigation isSignedIn={isSignedIn} />
       <HeroSection />
       <FeaturesSection />
-      <HowItWorksSection />
       <InfrastructureSection />
       <MetricsSection />
       <IntegrationsSection />
@@ -28,7 +29,7 @@ export default function Home() {
       <TestimonialsSection />
       <PricingSection />
       <FooterSection />
-      <LandingBottomNav />
+      <LandingBottomNav isSignedIn={isSignedIn} />
     </main>
   );
 }

@@ -193,7 +193,7 @@ export function DashboardSidebar({
         <div className="px-5 h-16 flex items-center border-b border-gold/25 shrink-0">
           <Brand />
         </div>
-        <div className="flex-1 overflow-y-auto p-3 pb-4">
+        <div className="flex-1 overflow-y-auto no-scrollbar p-3 pb-4">
           <DesktopNav />
         </div>
         <div className="p-3 border-t border-gold/25">

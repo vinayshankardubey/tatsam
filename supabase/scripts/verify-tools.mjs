@@ -11,7 +11,7 @@ for (const [label, url, marker] of [
   ["Ask · Shri Ram Shalaka",   "/dashboard/ask?tool=shri-ram-shalaka",   "Shri Ram Shalaka"],
   ["Ask · Chanakya Niti",      "/dashboard/ask?tool=chanakya-niti",      "Chanakya Niti"],
   ["Ask · Gita Shalaka",       "/dashboard/ask?tool=gita-shalaka",       "Gita Shalaka"],
-  ["Public /tools",            "/tools",                                 "Tatsam's tools"],
+  ["Public /tatsam",           "/tatsam",                                "Tatsam's tools"],
 ]) {
   const r = await fetch(`http://127.0.0.1:3000${url}`, { headers: { cookie }, redirect: "manual" });
   const t = await r.text();

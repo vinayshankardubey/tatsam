@@ -1,76 +1,97 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import {
   Home,
-  Sparkles,
   Compass,
-  IndianRupee,
   MoreHorizontal,
   X,
   LogIn,
+  LayoutDashboard,
+  CalendarDays,
+  BookOpen,
+  MessageCircle,
+  Smartphone,
+  ScrollText,
+  Mail,
+  ShieldCheck,
+  FileText,
 } from "lucide-react";
 
-const PRIMARY: Array<{
+type PrimaryTab = {
   key: string;
   label: string;
-  // Either `anchor` (on-page section) or `href` (route).
-  anchor?: string;
-  href?: string;
+  /** Route destination. Use `home` for the landing page (scrolls-to-top when already there). */
+  href: string;
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   primary?: boolean;
-}> = [
-  { key: "home",     label: "Home",     anchor: "#top",      icon: Home },
-  { key: "topics",   label: "Topics",   anchor: "#features", icon: Sparkles },
-  { key: "tatsam",   label: "Tatsam",   href:   "/tools",    icon: Compass, primary: true },
-  { key: "pricing",  label: "Pricing",  anchor: "#pricing",  icon: IndianRupee },
+  home?: boolean;
+};
+
+// Signed-out tabs — discovery focused. Panchang and Sources replace the old
+// in-page "Topics" / "Pricing" anchors so every tab lands on a real page.
+const PUBLIC_TABS: PrimaryTab[] = [
+  { key: "home",     label: "Home",     href: "/",         icon: Home,         home: true },
+  { key: "panchang", label: "Panchang", href: "/panchang", icon: CalendarDays },
+  { key: "tatsam",   label: "Tatsam",   href: "/tatsam",   icon: Compass,      primary: true },
+  { key: "sources",  label: "Sources",  href: "/sources",  icon: BookOpen },
 ];
 
-const SECONDARY = [
-  { label: "How it works",  anchor: "#how-it-works" },
-  { label: "Reach",         anchor: "#infra" },
-  { label: "Sources we read", anchor: "#integrations" },
-  { label: "How we answer", anchor: "#developers" },
-  { label: "Privacy",       anchor: "#security" },
+// Signed-in tabs — product-surface focused.
+const SIGNED_IN_TABS: PrimaryTab[] = [
+  { key: "home",    label: "Home",    href: "/",              icon: Home,         home: true },
+  { key: "today",   label: "Today",   href: "/dashboard",     icon: LayoutDashboard },
+  { key: "tatsam",  label: "Tatsam",  href: "/tatsam",        icon: Compass,      primary: true },
+  { key: "ask",     label: "Ask",     href: "/dashboard/ask", icon: MessageCircle },
 ];
 
-export function LandingBottomNav() {
+type SecondaryItem = {
+  label: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+};
+
+const PUBLIC_SECONDARY: SecondaryItem[] = [
+  { label: "How we answer", href: "/how-we-answer", icon: ScrollText },
+  { label: "Daily panchang", href: "/panchang",     icon: CalendarDays },
+  { label: "Sources we read", href: "/sources",     icon: BookOpen },
+  { label: "Apps",          href: "/apps",          icon: Smartphone },
+  { label: "Contact us",    href: "/contact",       icon: Mail },
+  { label: "Privacy",       href: "/privacy",       icon: ShieldCheck },
+  { label: "Terms",         href: "/terms",         icon: FileText },
+];
+
+const SIGNED_IN_SECONDARY: SecondaryItem[] = [
+  { label: "Panchang",      href: "/dashboard/panchang",  icon: CalendarDays },
+  { label: "Kundli",        href: "/dashboard/kundli",    icon: BookOpen },
+  { label: "Readings",      href: "/dashboard/readings",  icon: ScrollText },
+  { label: "Profile",       href: "/dashboard/profile",   icon: LayoutDashboard },
+  { label: "Apps",          href: "/apps",                icon: Smartphone },
+  { label: "Contact us",    href: "/contact",             icon: Mail },
+  { label: "Privacy",       href: "/privacy",             icon: ShieldCheck },
+];
+
+export function LandingBottomNav({ isSignedIn = false }: { isSignedIn?: boolean }) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const onLanding = pathname === "/";
   const [openMenu, setOpenMenu] = useState(false);
-  const [activeAnchor, setActiveAnchor] = useState("#top");
 
-  // Observe landing sections so the right tab highlights as the user scrolls.
-  useEffect(() => {
-    const candidates = ["#top", "#features", "#pricing"];
-    const targets = candidates
-      .map((id) => (id === "#top" ? document.body : document.querySelector(id)))
-      .filter(Boolean) as Element[];
-    if (targets.length === 0) return;
+  const tabs = isSignedIn ? SIGNED_IN_TABS : PUBLIC_TABS;
+  const secondary = isSignedIn ? SIGNED_IN_SECONDARY : PUBLIC_SECONDARY;
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        // Pick the one with the largest intersectionRatio that is intersecting.
-        const best = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (!best) return;
-        const id =
-          best.target === document.body
-            ? "#top"
-            : `#${best.target.id}`;
-        setActiveAnchor(id);
-      },
-      { rootMargin: "-40% 0px -50% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] },
-    );
-    targets.forEach((t) => io.observe(t));
-    return () => io.disconnect();
-  }, []);
+  const isActive = (tab: PrimaryTab) => {
+    if (tab.home) return onLanding;
+    return pathname === tab.href || pathname?.startsWith(tab.href + "/");
+  };
 
-  const scrollTo = (anchor: string) => {
-    if (anchor === "#top") {
+  const onHomeTap = (e: React.MouseEvent) => {
+    // When already on /, scroll to top instead of a no-op navigation.
+    if (onLanding) {
+      e.preventDefault();
       window.scrollTo({ top: 0, behavior: "smooth" });
-    } else {
-      document.querySelector(anchor)?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
@@ -79,10 +100,11 @@ export function LandingBottomNav() {
       <nav
         className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-brown/95 backdrop-blur-xl border-t border-ivory/10"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+        aria-label="Primary navigation"
       >
         <div className="flex items-stretch justify-around h-16 px-1">
-          {PRIMARY.map((it) => {
-            const active = it.anchor ? activeAnchor === it.anchor : false;
+          {tabs.map((it) => {
+            const active = isActive(it);
             const Icon = it.icon;
 
             const inner = it.primary ? (
@@ -90,16 +112,14 @@ export function LandingBottomNav() {
                 <span className="w-11 h-11 -mt-5 rounded-full bg-maroon text-ivory flex items-center justify-center shadow-md shadow-black/30 ring-4 ring-brown">
                   <Icon className="w-5 h-5" strokeWidth={2.25} />
                 </span>
-                <span className="text-[10px] font-medium tracking-wide text-gold">
+                <span className={`text-[10px] font-medium tracking-wide ${active ? "text-gold" : "text-gold/80"}`}>
                   {it.label}
                 </span>
               </span>
             ) : (
               <span className="flex flex-col items-center justify-center gap-1">
                 <Icon
-                  className={`w-[22px] h-[22px] ${
-                    active ? "text-gold" : "text-ivory/55"
-                  }`}
+                  className={`w-[22px] h-[22px] ${active ? "text-gold" : "text-ivory/55"}`}
                   strokeWidth={active ? 2.25 : 1.75}
                 />
                 <span
@@ -112,23 +132,16 @@ export function LandingBottomNav() {
               </span>
             );
 
-            return it.href ? (
+            return (
               <Link
                 key={it.key}
                 href={it.href}
+                onClick={it.home ? onHomeTap : undefined}
                 className="flex-1 flex items-center justify-center active:scale-[0.98] transition-transform"
+                aria-current={active ? "page" : undefined}
               >
                 {inner}
               </Link>
-            ) : (
-              <button
-                key={it.key}
-                type="button"
-                onClick={() => scrollTo(it.anchor!)}
-                className="flex-1 flex items-center justify-center active:scale-[0.98] transition-transform"
-              >
-                {inner}
-              </button>
             );
           })}
 
@@ -162,10 +175,13 @@ export function LandingBottomNav() {
         ].join(" ")}
         aria-hidden={!openMenu}
       >
-        <div className="absolute inset-0 bg-brown/30" onClick={() => setOpenMenu(false)} />
+        <div
+          className="absolute inset-0 bg-brown/40 backdrop-blur-sm"
+          onClick={() => setOpenMenu(false)}
+        />
         <aside
           className={[
-            "absolute inset-x-0 bottom-0 bg-ivory border-t border-gold/25 rounded-t-2xl flex flex-col",
+            "absolute inset-x-0 bottom-0 bg-ivory border-t border-gold/25 rounded-t-3xl flex flex-col max-h-[85vh]",
             "transition-transform duration-300",
             openMenu ? "translate-y-0" : "translate-y-full",
           ].join(" ")}
@@ -183,42 +199,47 @@ export function LandingBottomNav() {
             </button>
           </div>
 
-          <div className="px-3 py-2">
+          <div className="px-3 py-2 overflow-y-auto">
             <p className="px-2 pb-2 text-[10px] font-mono text-brown/45 uppercase tracking-wider">
               Explore Tatsam
             </p>
             <nav className="grid grid-cols-2 gap-1">
-              {SECONDARY.map((s) => (
-                <button
-                  key={s.anchor}
-                  type="button"
-                  onClick={() => {
-                    setOpenMenu(false);
-                    setTimeout(() => scrollTo(s.anchor), 150);
-                  }}
-                  className="text-left px-3 h-11 rounded-lg text-sm text-brown/80 hover:bg-amber/15"
-                >
-                  {s.label}
-                </button>
-              ))}
+              {secondary.map((s) => {
+                const Icon = s.icon;
+                return (
+                  <Link
+                    key={s.href}
+                    href={s.href}
+                    onClick={() => setOpenMenu(false)}
+                    className="flex items-center gap-2.5 px-3 h-11 rounded-lg text-sm text-brown/80 hover:bg-amber/15 hover:text-brown transition-colors"
+                  >
+                    <Icon className="w-4 h-4 text-brown/55 shrink-0" />
+                    <span className="truncate">{s.label}</span>
+                  </Link>
+                );
+              })}
             </nav>
           </div>
 
           <div className="px-3 py-3 border-t border-gold/25">
             <Link
-              href="/login"
+              href={isSignedIn ? "/dashboard" : "/login"}
               onClick={() => setOpenMenu(false)}
               className="flex items-center gap-3 px-3 h-11 rounded-lg text-sm text-brown hover:bg-amber/15"
             >
-              <LogIn className="w-4 h-4 text-brown/60" />
-              <span>Sign in</span>
+              {isSignedIn ? (
+                <LayoutDashboard className="w-4 h-4 text-brown/60" />
+              ) : (
+                <LogIn className="w-4 h-4 text-brown/60" />
+              )}
+              <span>{isSignedIn ? "Go to dashboard" : "Sign in"}</span>
             </Link>
             <Link
-              href="/tools"
+              href="/dashboard/ask"
               onClick={() => setOpenMenu(false)}
               className="mt-2 flex items-center justify-center gap-2 h-11 rounded-full bg-maroon text-ivory text-sm"
             >
-              Explore Tatsam
+              Ask Tatsam a question
             </Link>
           </div>
         </aside>

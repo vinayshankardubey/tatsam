@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
 import { bookReading } from "../actions";
+import { getCurrentUser, getCurrentProfile } from "@/lib/supabase/current-user";
 import { PLAN_META, type Profile, type ReadingPlan } from "@/lib/supabase/types";
 
 const PLAN_COPY: Record<ReadingPlan, { tagline: string; bullets: string[] }> = {
@@ -40,17 +40,9 @@ export default async function BookPage({
 }: {
   searchParams: Promise<{ plan?: string }>;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
+  const profile = await getCurrentProfile();
 
   const { plan: planParam } = await searchParams;
   const requestedPlan = (["darshan", "signature", "legacy"] as const).includes(
@@ -59,7 +51,7 @@ export default async function BookPage({
     ? (planParam as ReadingPlan)
     : "signature";
 
-  const profileComplete = isProfileComplete(profile as Profile | null);
+  const profileComplete = isProfileComplete(profile);
 
   if (!profileComplete) {
     return (

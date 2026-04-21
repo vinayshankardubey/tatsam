@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-import type { Profile } from "@/lib/supabase/types";
+import { getCurrentUser, getCurrentProfile } from "@/lib/supabase/current-user";
 import { sunSignFromDob, SIGN_BLURBS } from "@/lib/astro";
 import {
   lifePathNumber,
@@ -14,18 +13,10 @@ import {
 } from "@/lib/numerology";
 
 export default async function KundliPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
-  const p = (profile ?? null) as Profile | null;
+  const p = await getCurrentProfile();
   const complete = !!(p?.full_name && p?.dob && p?.tob && p?.birth_place);
 
   if (!complete) {

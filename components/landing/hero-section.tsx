@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 
-const words = ["answered", "illumined", "grounded", "unfolded"];
+const words = ["decoded", "mapped", "revealed", "illumined"];
 
 function BlurWord({ word, trigger }: { word: string; trigger: number }) {
   const letters = word.split("");
@@ -190,9 +190,9 @@ export function HeroSection() {
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               }`}
             >
-              <span className="block whitespace-nowrap">Your questions,</span>
+              <span className="block whitespace-nowrap">Your life,</span>
               <span className="block whitespace-nowrap">
-                by the scriptures,{" "}
+                by the numbers,{" "}
                 <span className="relative inline-block">
                   <BlurWord word={words[wordIndex]} trigger={wordIndex} />
                 </span>

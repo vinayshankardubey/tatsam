@@ -3,6 +3,20 @@
 import { useEffect, useState, useRef } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
+const ASCII_PATTERN = (() => {
+  let state = 1;
+  const rand = () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  return Array.from({ length: 60 }, () =>
+    Array.from({ length: 100 }, () => (rand() > 0.7 ? '"' : " ")).join("")
+  ).join("\n");
+})();
+
 const testimonials = [
   {
     quote: "I asked whether to take a job that felt too good to be true. The answer pointed me to Gita 2.47 — and by the end, I understood the warning, not the promise. Saved me a painful year.",
@@ -81,11 +95,7 @@ export function TestimonialsSection() {
     <section ref={sectionRef} className="relative py-32 lg:py-40 bg-foreground text-background overflow-hidden">
       {/* ASCII background pattern */}
       <div className="absolute inset-0 font-mono text-[10px] text-background/[0.02] leading-tight overflow-hidden whitespace-pre select-none">
-        {Array.from({ length: 60 }, (_, i) => 
-          Array.from({ length: 100 }, () => 
-            Math.random() > 0.7 ? '"' : ' '
-          ).join("")
-        ).join("\n")}
+        {ASCII_PATTERN}
       </div>
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12">

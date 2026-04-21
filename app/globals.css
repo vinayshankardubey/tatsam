@@ -219,4 +219,14 @@
     50%  { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
+
+  /* Hide scrollbars on opt-in containers (e.g. the dashboard sidebar)
+     while keeping scroll/keyboard behaviour intact. */
+  .no-scrollbar {
+    scrollbar-width: none;          /* Firefox */
+    -ms-overflow-style: none;       /* Edge/IE */
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;                  /* WebKit */
+  }
 }

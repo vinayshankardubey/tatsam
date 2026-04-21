@@ -1,22 +1,12 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-import type { Profile } from "@/lib/supabase/types";
+import { getCurrentUser, getCurrentProfile } from "@/lib/supabase/current-user";
 import { CompatibilityForm } from "./compatibility-form";
 
 export default async function CompatibilityPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
-
-  const p = (profile ?? null) as Profile | null;
+  const p = await getCurrentProfile();
   const hasChart = !!(p?.full_name && p?.dob);
 
   if (!hasChart) {

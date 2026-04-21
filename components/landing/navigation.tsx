@@ -5,15 +5,28 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 
-const navLinks = [
-  { name: "What you can ask", href: "#features"      },
-  { name: "Process",          href: "#how-it-works"  },
-  { name: "Reach",            href: "#infra"         },
-  { name: "Sources",          href: "#integrations"  },
-  { name: "Privacy",          href: "#security"      },
+/**
+ * Nav items shown on the landing page. We keep two sets: one for visitors
+ * (discovery-focused — real pages, not in-page anchors) and a shorter
+ * logged-in set that jumps straight into product surfaces.
+ */
+const PUBLIC_LINKS: Array<{ name: string; href: string }> = [
+  { name: "Explore",       href: "/tatsam"        },
+  { name: "Daily panchang", href: "/panchang"     },
+  { name: "How we answer", href: "/how-we-answer" },
+  { name: "Sources",       href: "/sources"       },
+  { name: "Apps",          href: "/apps"          },
 ];
 
-export function Navigation() {
+const SIGNED_IN_LINKS: Array<{ name: string; href: string }> = [
+  { name: "Today",      href: "/dashboard"          },
+  { name: "Tatsam",     href: "/tatsam"             },
+  { name: "Kundli",     href: "/dashboard/kundli"   },
+  { name: "Readings",   href: "/dashboard/readings" },
+];
+
+export function Navigation({ isSignedIn = false }: { isSignedIn?: boolean }) {
+  const navLinks = isSignedIn ? SIGNED_IN_LINKS : PUBLIC_LINKS;
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -46,30 +59,36 @@ export function Navigation() {
           }`}
         >
           {/* Logo */}
-          <a href="#" className="flex items-center gap-2 group">
+          <Link href="/" className="flex items-center gap-2 group">
             <span className={`font-display tracking-tight text-brown transition-all duration-500 ${isScrolled ? "text-xl" : "text-2xl"}`}>Tatsam</span>
             <span className={`font-mono transition-all duration-500 text-brown/55 ${isScrolled ? "text-[10px] mt-0.5" : "text-xs mt-1"}`}>तत्सम्</span>
-          </a>
+          </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-12">
+          <div className="hidden md:flex items-center gap-6 lg:gap-8">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.name}
                 href={link.href}
-                className="text-sm text-brown/70 hover:text-brown transition-colors duration-300 relative group"
+                className="text-sm text-brown/70 hover:text-brown transition-colors duration-300 relative group whitespace-nowrap"
               >
                 {link.name}
                 <span className="absolute -bottom-1 left-0 w-0 h-px bg-maroon transition-all duration-300 group-hover:w-full" />
-              </a>
+              </Link>
             ))}
           </div>
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <Link href="/login" className={`transition-all duration-500 text-brown/70 hover:text-brown ${isScrolled ? "text-xs" : "text-sm"}`}>
-              Sign in
-            </Link>
+            {isSignedIn ? (
+              <Link href="/dashboard" className={`transition-all duration-500 text-brown/70 hover:text-brown ${isScrolled ? "text-xs" : "text-sm"}`}>
+                Dashboard
+              </Link>
+            ) : (
+              <Link href="/login" className={`transition-all duration-500 text-brown/70 hover:text-brown ${isScrolled ? "text-xs" : "text-sm"}`}>
+                Sign in
+              </Link>
+            )}
             <Button
               asChild
               size="sm"
@@ -114,21 +133,21 @@ export function Navigation() {
           </button>
 
           {/* Navigation Links */}
-          <div className="flex-1 flex flex-col justify-center gap-8">
+          <div className="flex-1 flex flex-col justify-center gap-6">
             {navLinks.map((link, i) => (
-              <a
+              <Link
                 key={link.name}
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`text-5xl font-display text-foreground hover:text-muted-foreground transition-all duration-500 ${
-                  isMobileMenuOpen 
-                    ? "opacity-100 translate-y-0" 
+                className={`text-4xl md:text-5xl font-display text-foreground hover:text-muted-foreground transition-all duration-500 ${
+                  isMobileMenuOpen
+                    ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-4"
                 }`}
                 style={{ transitionDelay: isMobileMenuOpen ? `${i * 75}ms` : "0ms" }}
               >
                 {link.name}
-              </a>
+              </Link>
             ))}
           </div>
           
@@ -145,8 +164,8 @@ export function Navigation() {
               variant="outline"
               className="flex-1 rounded-full h-14 text-base"
             >
-              <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                Sign in
+              <Link href={isSignedIn ? "/dashboard" : "/login"} onClick={() => setIsMobileMenuOpen(false)}>
+                {isSignedIn ? "Dashboard" : "Sign in"}
               </Link>
             </Button>
             <Button

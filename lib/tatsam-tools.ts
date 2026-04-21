@@ -5,7 +5,13 @@
 // and `introMessage` as the first assistant turn. `starterPrompts` seed the
 // empty state.
 
-export type ToolCategory = "oracle" | "chart" | "counsel" | "daily";
+export type ToolCategory =
+  | "oracle"
+  | "chart"
+  | "counsel"
+  | "daily"
+  | "remedy"
+  | "talisman";
 
 export type TatsamTool = {
   id: string;
@@ -32,17 +38,21 @@ export type TatsamTool = {
 };
 
 export const CATEGORY_LABEL: Record<ToolCategory, string> = {
-  oracle:  "Oracles",
-  chart:   "Chart & numbers",
-  counsel: "Counsel from the texts",
-  daily:   "Daily rhythm",
+  oracle:   "Oracles",
+  chart:    "Chart & numbers",
+  counsel:  "Counsel from the texts",
+  daily:    "Daily rhythm",
+  remedy:   "Remedies & poojas",
+  talisman: "Talismans & dharanas",
 };
 
 export const CATEGORY_HINT: Record<ToolCategory, string> = {
-  oracle:  "Pose a question, receive a passage drawn from scripture.",
-  chart:   "Cast your chart, read your numbers, time your life.",
-  counsel: "Ask the classical texts as you would a wise elder.",
-  daily:   "Today, through the eyes of the old calendar.",
+  oracle:   "Pose a question, receive a passage drawn from scripture.",
+  chart:    "Cast your chart, read your numbers, time your life.",
+  counsel:  "Ask the classical texts as you would a wise elder.",
+  daily:    "Today, through the eyes of the old calendar.",
+  remedy:   "Shastric poojas and dosh nivaran — procedure, timing, meaning.",
+  talisman: "Rudraksha, ratna, dhaga — what to wear, when, and why.",
 };
 
 export const TATSAM_TOOLS: TatsamTool[] = [
@@ -345,6 +355,262 @@ export const TATSAM_TOOLS: TatsamTool[] = [
     starterPrompts: [],
     introMessage: "",
     systemScope: "",
+  },
+
+  // ── Remedies & poojas ────────────────────────────────────────
+  {
+    id: "grahan-dosh-shanti",
+    name: "Grahan Dosh Shanti",
+    sanskrit: "ग्रहण दोष शान्ति",
+    category: "remedy",
+    tagline: "For eclipse-born afflictions in the chart.",
+    description:
+      "When Sun or Moon is afflicted by Rahu/Ketu near an eclipse axis, classical jyotish prescribes Grahan Dosh Shanti — japa of Surya or Chandra mantras, tarpanam, and a homam during a favourable tithi.",
+    glyph: "ग्र",
+    source: "Brihat Parashara Hora · Skanda Purana",
+    starterPrompts: [
+      "Do I have Grahan Dosh in my chart?",
+      "What does the Parashara Hora say about Surya–Rahu yuti?",
+      "The full shastric procedure for Grahan Dosh Shanti.",
+      "Which muhurat is best for the Shanti paath?",
+    ],
+    introMessage:
+      "Grahan Dosh sits where the luminary lost its light. Tell me your concern or share your placements — I will read the shastra on what it asks of you.",
+    systemScope:
+      "Use Brihat Parashara Hora Shastra (grahan dosha chapter), Skanda Purana's Kashi Khanda, and classical Shanti Vidhi texts. Return what the dosha is, when it is said to apply, the shastric remedy, and one honest caveat.",
+  },
+  {
+    id: "pitra-dosh-shanti",
+    name: "Pitra Dosh Shanti",
+    sanskrit: "पितृ दोष शान्ति",
+    category: "remedy",
+    tagline: "Honouring the line, clearing ancestral debt.",
+    description:
+      "From the Matsya and Garuda Puranas — the Pitra rites. Tarpanam in Pitru Paksha, Tripindi Shraddha at Gaya/Trimbakeshwar, Annadanam. Taken when the 9th house or Sun shows ancestral affliction.",
+    glyph: "पि",
+    source: "Garuda Purana · Matsya Purana",
+    starterPrompts: [
+      "What is Pitra Dosh and when does it apply?",
+      "The Garuda Purana on shraddha karma.",
+      "Pitru Paksha 2026 — the sixteen tithis explained.",
+      "Tripindi Shraddha — is it for me?",
+    ],
+    introMessage:
+      "Pitra karma is older than astrology — the line before you, asking to be remembered. Ask, and I'll read from the Garuda and Matsya Puranas.",
+    systemScope:
+      "Use Garuda Purana (Preta Khanda), Matsya Purana, and Dharma Sindhu for Pitra rites. Return the rite, its tithi, its mantra, and who traditionally performs it.",
+  },
+  {
+    id: "kaal-sarp-dosh",
+    name: "Kaal Sarp Dosh",
+    sanskrit: "काल सर्प दोष",
+    category: "remedy",
+    tagline: "When all planets sit between Rahu and Ketu.",
+    description:
+      "A comparatively modern dosha — when every graha in the chart falls on one side of the Rahu–Ketu axis. The classical remedy is Nag Bali + Tripindi at Trimbakeshwar or Kalahasti.",
+    glyph: "का",
+    source: "Phaladeepika · regional jyotish practice",
+    starterPrompts: [
+      "Do I actually have Kaal Sarp Dosh?",
+      "Phaladeepika on the Rahu–Ketu axis.",
+      "What is Nag Bali Pooja and where is it performed?",
+      "Is the fear around this dosha overblown?",
+    ],
+    introMessage:
+      "Kaal Sarp is one of the most over-hyped doshas in modern astrology. Let me show you what the classical texts actually say, and what a serious remedy looks like.",
+    systemScope:
+      "Use Phaladeepika and Brihat Parashara Hora. Clearly distinguish classical statements from later folk additions. Name the traditional remedial kshetras (Trimbakeshwar, Kalahasti) and the correct procedure.",
+  },
+  {
+    id: "mangal-dosh",
+    name: "Mangal Dosh",
+    sanskrit: "मंगल दोष",
+    category: "remedy",
+    tagline: "Mars-specific shanti for marriage charts.",
+    description:
+      "When Mars occupies the 1st, 4th, 7th, 8th or 12th house, classical matchmaking flags Manglik Dosh. The texts also prescribe its cancellations — and its remedies when they don't apply.",
+    glyph: "म",
+    source: "Jataka Parijata · Brihat Parashara Hora",
+    starterPrompts: [
+      "Am I Manglik? Explain with my placements.",
+      "All the classical cancellations of Mangal Dosh.",
+      "Kumbh Vivah — what it is, and when it is genuinely needed.",
+      "Mangal Shanti Paath — the procedure.",
+    ],
+    introMessage:
+      "Mangal Dosh has more exceptions than rules. Tell me your 7th-house Mars situation, or just ask — I will read from Jataka Parijata and Parashara.",
+    systemScope:
+      "Use Jataka Parijata and Brihat Parashara Hora. Enumerate the five classical positions, the cancellations (parihara), and the shastric remedies. Avoid folk fear-tactics.",
+  },
+  {
+    id: "nazar-utaran",
+    name: "Nazar Utaran",
+    sanskrit: "दृष्टि दोष निवारण",
+    category: "remedy",
+    tagline: "Evil eye — the classical countermeasures.",
+    description:
+      "From the Atharvaveda and regional practice: the simple, time-honoured nazar utaran with salt, raai, mirchi, or Hanuman Chalisa paath. What it addresses, and what it does not.",
+    glyph: "दृ",
+    source: "Atharvaveda · Hanuman Chalisa",
+    starterPrompts: [
+      "What does the Atharvaveda actually say about evil eye?",
+      "The seven-grain nazar utaran — when and how.",
+      "Why the Hanuman Chalisa is prescribed for drishti dosha.",
+      "Can I do nazar utaran for my child?",
+    ],
+    introMessage:
+      "Drishti dosha is the oldest concern in Indian homes. I'll keep my answers grounded in the Atharvaveda and the Chalisa — not the TV-serial version.",
+    systemScope:
+      "Use Atharvaveda (Kanda 8, 19), regional Hindu practice, and Hanuman Chalisa chaupais 27–31. Return what the practice is, its scriptural basis where one exists, and where folk custom takes over.",
+  },
+  {
+    id: "rin-mukti",
+    name: "Rin Mukti Pooja",
+    sanskrit: "ऋण मुक्ति पूजा",
+    category: "remedy",
+    tagline: "For dissolving debt and the weight that comes with it.",
+    description:
+      "Rin Mukti involves Mangal japa (Mars is karaka of debt in classical jyotish), Hanuman Chalisa, and Rin Mochan Mangal Stotra by Sage Markandeya. Traditionally begun on Tuesday.",
+    glyph: "ऋ",
+    source: "Skanda Purana · Rin Mochan Mangal Stotra",
+    starterPrompts: [
+      "What is the Rin Mochan Mangal Stotra?",
+      "Why Mars is the karaka for debt.",
+      "The full procedure for Rin Mukti Pooja at home.",
+      "On Tuesday fasts and their shastric basis.",
+    ],
+    introMessage:
+      "Karz ka bhaar alag hai — the weight of debt is different from other weights. The texts know this. Tell me what you are carrying.",
+    systemScope:
+      "Use Skanda Purana (Rin Mochan Mangal Stotra), Brihat Parashara Hora (Mangal karakatwa), and Garga Samhita. Return stotra, japa count, and traditional Tuesday procedure.",
+  },
+  {
+    id: "satyanarayan-katha",
+    name: "Satyanarayan Katha",
+    sanskrit: "सत्यनारायण कथा",
+    category: "remedy",
+    tagline: "The household pooja for gratitude and sankalpa.",
+    description:
+      "From the Skanda Purana's Reva Khanda: the five-chapter katha of Satyanarayan. Done on Purnima or a significant day — for new beginnings, thanksgiving, sankalpa.",
+    glyph: "स",
+    source: "Skanda Purana · Reva Khanda",
+    starterPrompts: [
+      "When should one do the Satyanarayan katha?",
+      "All five chapters summarised.",
+      "What does the sankalpa section really say?",
+      "Prasad, samagri, sequence — the at-home vidhi.",
+    ],
+    introMessage:
+      "The most done pooja in Indian homes — and the most misunderstood. I will walk you through what the Skanda Purana's five adhyayas actually hold.",
+    systemScope:
+      "Use Skanda Purana (Reva Khanda, chapters on Satyanarayan vrata). Return chapter summaries, the sankalpa wording, samagri list, and the exact sequence.",
+  },
+  {
+    id: "new-moon-remedy",
+    name: "New Moon Sankalpa",
+    sanskrit: "अमावस्या सङ्कल्प",
+    category: "remedy",
+    tagline: "Amavasya — the dark moon, for release and setting intent.",
+    description:
+      "Amavasya is for what you are letting go of, and what you are seeding. Pitra tarpanam, Mahakali upasana, and a quiet sankalpa. A classical monthly reset.",
+    glyph: "अ",
+    source: "Garuda Purana · Devi Mahatmya",
+    starterPrompts: [
+      "What is an Amavasya sankalpa and how do I write mine?",
+      "The shastric do's and don'ts of Amavasya night.",
+      "Why pitra tarpanam is done on Amavasya.",
+      "Mahakali upasana on Amavasya — the basic vidhi.",
+    ],
+    introMessage:
+      "The dark moon is a release, not a loss. Tell me what you want to let go of this Amavasya — I'll read the shastra with you.",
+    systemScope:
+      "Use Garuda Purana and Devi Mahatmya. Treat Amavasya as both pitru-tithi and Devi-tithi. Return vidhi, mantra, and what the texts warn against doing on this night.",
+  },
+
+  // ── Talismans & dharanas ─────────────────────────────────────
+  {
+    id: "rudraksha",
+    name: "Rudraksha",
+    sanskrit: "रुद्राक्ष",
+    category: "talisman",
+    tagline: "The seed of Rudra — from one-mukhi to fourteen.",
+    description:
+      "The Rudraksha Jabala Upanishad and Shiva Purana list fourteen kinds of rudraksha by mukhi, each with its ruling deity and indication. Which to wear, how to energize, and when not to.",
+    glyph: "रु",
+    source: "Rudraksha Jabala Upanishad · Shiva Purana",
+    starterPrompts: [
+      "Which mukhi rudraksha is right for me?",
+      "The Shiva Purana on Panch-mukhi rudraksha.",
+      "How to energize a new mala — the shastric vidhi.",
+      "The rules for when a rudraksha should be removed.",
+    ],
+    introMessage:
+      "Rudraksha is Shiva's tear — nothing less. Tell me your intention or your concern, and I will read what the Upanishad and Purana say about which mukhi to wear.",
+    systemScope:
+      "Use Rudraksha Jabala Upanishad and Shiva Purana (Vidyeshwara Samhita). For each mukhi — 1 through 14 — return deity, indication, mantra, and cautions. Cite folk additions separately.",
+  },
+  {
+    id: "navgraha-kavach",
+    name: "Navagraha Kavach",
+    sanskrit: "नवग्रह कवच",
+    category: "talisman",
+    tagline: "A nine-bead dharana for the planets of your chart.",
+    description:
+      "A bracelet or kavach with the nine grahas — each bead tuned to one planet (Ruby for Sun, Pearl for Moon, Coral for Mars, etc). Worn under the guidance of a classical reading, not casually.",
+    glyph: "नव",
+    source: "Brihat Samhita · Ratnashastra",
+    starterPrompts: [
+      "Which grahas in my chart need strengthening?",
+      "The Brihat Samhita on the nine ratnas.",
+      "Why Navagraha bracelets are often wrong.",
+      "The correct way to wear a multi-stone dharana.",
+    ],
+    introMessage:
+      "The Navagraha dharana is powerful but misused. I'll read Varahamihira on the ratnas — and point out what modern bracelets get wrong.",
+    systemScope:
+      "Use Brihat Samhita (Ratnashastra adhyaya) and Garga Samhita. Return each graha's stone, its alternative (uparatna), the finger it traditionally sits on, and the metal it should be set in.",
+  },
+  {
+    id: "navaratna",
+    name: "Navratna",
+    sanskrit: "नवरत्न",
+    category: "talisman",
+    tagline: "The nine gems — one of each, set in classical order.",
+    description:
+      "The Navratna of the Agni Purana and Ratna Pariksha: Manikya, Mukta, Praval, Panna, Pushparaj, Heerak, Neelam, Gomed, Vaidurya. Worn as a single pendant, not cherry-picked.",
+    glyph: "९र",
+    source: "Agni Purana · Ratna Pariksha",
+    starterPrompts: [
+      "How is a Navratna set traditionally ordered?",
+      "Should I wear Neelam and Pukhraj together?",
+      "The Ratna Pariksha on identifying a pure ruby.",
+      "When the texts say to avoid a particular stone.",
+    ],
+    introMessage:
+      "Navratna is meant to be worn whole — never as a single stone from a random list. Ask me what applies to you and I will read from the Ratna Pariksha.",
+    systemScope:
+      "Use Agni Purana (Ratna adhyaya) and Ratna Pariksha by Agastya. Return the nine stones with their Sanskrit names, planet, and rules on combinations or mutual annulment.",
+  },
+  {
+    id: "yantra",
+    name: "Shri Yantra & diagrams",
+    sanskrit: "श्री यन्त्र",
+    category: "talisman",
+    tagline: "Geometry as devotion — the Tantric diagrams.",
+    description:
+      "Shri Yantra, Sudarshana, Mahamrityunjaya, Vashikarana — the classical yantras with their bija mantras. What each is for, and how they are traditionally energized.",
+    glyph: "श्री",
+    source: "Shri Vidya · Mantra Maharnava",
+    starterPrompts: [
+      "What is the Shri Yantra and what does it do?",
+      "The nine triangles of Shri Chakra, explained.",
+      "How is a yantra prana-pratishtha done at home?",
+      "Mahamrityunjaya yantra — when is it prescribed?",
+    ],
+    introMessage:
+      "A yantra is a deity in geometry — not a wall-sticker. Ask, and I'll open the Shri Vidya for you.",
+    systemScope:
+      "Use Shri Vidya literature (Saundarya Lahari, Tripura Rahasya), Mantra Maharnava. Return yantra purpose, bija, prana-pratishtha procedure, and daily upasana.",
   },
 ];
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser, getCurrentProfile } from "@/lib/supabase/current-user";
 import {
-  type Profile,
   type Reading,
   PLAN_META,
   STATUS_LABEL,
@@ -36,29 +36,25 @@ import { reflectionFor } from "@/lib/horoscope";
  * acharya conversations at /dashboard/ask, and profile at /dashboard/profile.
  */
 export default async function TodayPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
+  const supabase = await createClient();
   const now = new Date();
 
-  const [{ data: profile }, { data: readings }, { data: repliesRaw }] =
-    await Promise.all([
-      supabase.from("profiles").select("*").eq("id", user.id).single(),
-      supabase
-        .from("readings")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("reading_messages")
-        .select("reading_id, sender_id")
-        .neq("sender_id", user.id),
-    ]);
-
-  const p = (profile ?? null) as Profile | null;
+  // Profile is cached via getCurrentProfile (layout already fetched it).
+  const [p, { data: readings }, { data: repliesRaw }] = await Promise.all([
+    getCurrentProfile(),
+    supabase
+      .from("readings")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("reading_messages")
+      .select("reading_id, sender_id")
+      .neq("sender_id", user.id),
+  ]);
   const profileComplete = !!(p?.full_name && p?.dob && p?.tob && p?.birth_place);
   const firstName = (p?.full_name ?? "").split(" ")[0] || "seeker";
 

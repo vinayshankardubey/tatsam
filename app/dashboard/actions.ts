@@ -18,20 +18,34 @@ export async function updateProfile(formData: FormData) {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const full_name = String(formData.get("full_name") ?? "").trim() || null;
-  const phone = String(formData.get("phone") ?? "").trim() || null;
-  const dob = String(formData.get("dob") ?? "").trim() || null;
-  const tob = String(formData.get("tob") ?? "").trim() || null;
-  const birth_place = String(formData.get("birth_place") ?? "").trim() || null;
-  const language = String(formData.get("language") ?? "en").trim() || "en";
+  // Patch-style: only fields present in the form are written. Lets each
+  // profile card save its own subset without clobbering sibling fields.
+  const patch: Record<string, string | null> = {};
+  const setField = (key: string, nullable = true) => {
+    if (!formData.has(key)) return;
+    const v = String(formData.get(key) ?? "").trim();
+    patch[key] = v ? v : nullable ? null : v;
+  };
+  setField("full_name");
+  setField("phone");
+  setField("dob");
+  setField("tob");
+  setField("birth_place");
+  if (formData.has("language")) {
+    const lang = String(formData.get("language") ?? "").trim();
+    patch.language = lang === "hi" ? "hi" : "en";
+  }
+
+  if (Object.keys(patch).length === 0) return { ok: true };
 
   const { error } = await supabase
     .from("profiles")
-    .update({ full_name, phone, dob, tob, birth_place, language })
+    .update(patch)
     .eq("id", user.id);
 
   if (error) return { error: error.message };
-  revalidatePath("/dashboard");
+  // Revalidate the whole /dashboard subtree so home + profile both refresh.
+  revalidatePath("/dashboard", "layout");
   return { ok: true };
 }
 

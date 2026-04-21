@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/current-user";
 import {
   type Reading,
   PLAN_META,
@@ -13,11 +14,9 @@ import {
 } from "@/lib/reading-helpers";
 
 export default async function ReadingsIndexPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
+  const supabase = await createClient();
 
   const [{ data: readings }, { data: repliesRaw }] = await Promise.all([
     supabase

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/current-user";
 import {
   type Reading,
   type ReadingRemedy,
@@ -23,11 +24,9 @@ type RemedyWithReading = ReadingRemedy & {
 };
 
 export default async function RemediesPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
+  const supabase = await createClient();
 
   const { data } = await supabase
     .from("reading_remedies")

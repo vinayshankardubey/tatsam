@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 const features = [
   {
     number: "01",
-    title: "Life & dharma",
+    title: "Life & Number",
     description: "Ask the questions you'd ask a wise elder — about purpose, work, right action. Answers drawn from the Bhagavad Gita, the Upanishads and the Yoga Sutras.",
     stats: { value: "700+", label: "verses of the Gita consulted" },
   },
