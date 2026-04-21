@@ -39,9 +39,24 @@ export async function updateSession(request: NextRequest) {
   // We only reach here for /login and protected prefixes.
   let response = NextResponse.next({ request });
 
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // Missing prod env → let the page render (signed-out view) instead of
+  // throwing at every request. Ops will see the 500-less symptom but the
+  // landing stays reachable and auth-gated pages will redirect to /login.
+  if (!url || !anon) {
+    if (protectedPath) {
+      const redirect = request.nextUrl.clone();
+      redirect.pathname = "/login";
+      return NextResponse.redirect(redirect);
+    }
+    return response;
+  }
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    url,
+    anon,
     {
       cookies: {
         getAll() {
