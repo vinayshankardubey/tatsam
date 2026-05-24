@@ -14,7 +14,7 @@ import {
   CornerDownLeft,
   Square,
 } from "lucide-react";
-import { askQuestion, clearAskHistory } from "./actions";
+import { clearAskHistory } from "./actions";
 
 export type AskMessage = {
   id: string;
@@ -48,11 +48,13 @@ export function AskChat({
 }) {
   const [messages, setMessages] = useState<AskMessage[]>(initialMessages);
   const [draft, setDraft] = useState("");
-  const [pending, startTransition] = useTransition();
+  const [pending, setPending] = useState(false);
+  const [clearing, startClearing] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const composerRef = useRef<HTMLTextAreaElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   const empty = messages.length === 0;
 
@@ -87,53 +89,85 @@ export function AskChat({
     el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
   }, [draft]);
 
-  const send = (question: string) => {
+  const send = async (question: string) => {
     const q = question.trim();
     if (!q || pending) return;
 
-    const tempUser: AskMessage = {
-      id: `temp-${Date.now()}`,
-      role: "user",
-      content: q,
-      citation: null,
-      created_at: new Date().toISOString(),
-    };
-    setMessages((m) => [...m, tempUser]);
+    const tempUserId = `temp-user-${Date.now()}`;
+    const tempAssistantId = `temp-ai-${Date.now()}`;
+    const now = new Date().toISOString();
+
+    setMessages((m) => [
+      ...m,
+      { id: tempUserId, role: "user", content: q, citation: null, created_at: now },
+      { id: tempAssistantId, role: "assistant", content: "", citation: null, created_at: now },
+    ]);
     setDraft("");
     setError(null);
+    setPending(true);
 
-    const fd = new FormData();
-    fd.set("question", q);
-    if (scope) fd.set("tool", scope.id);
+    const ac = new AbortController();
+    abortRef.current = ac;
 
-    startTransition(async () => {
-      const res = await askQuestion(fd);
-      if (res?.error || !res.ok) {
-        setError(res?.error ?? "Something went wrong.");
-        setMessages((m) => m.filter((x) => x.id !== tempUser.id));
-        return;
+    try {
+      const res = await fetch("/api/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: q, tool: scope?.id ?? null }),
+        signal: ac.signal,
+      });
+      if (!res.ok || !res.body) {
+        throw new Error(await res.text().catch(() => "Request failed."));
       }
+      await consumeSse(res.body, {
+        onDelta: (text) => {
+          setMessages((m) =>
+            m.map((x) =>
+              x.id === tempAssistantId ? { ...x, content: x.content + text } : x,
+            ),
+          );
+        },
+        onDone: (final) => {
+          setMessages((m) =>
+            m.map((x) => {
+              if (x.id === tempUserId && final.userMessageId) {
+                return { ...x, id: final.userMessageId };
+              }
+              if (x.id === tempAssistantId) {
+                return {
+                  ...x,
+                  id: final.assistantMessageId ?? x.id,
+                  content: final.assistantContent || x.content,
+                  citation: final.citation ?? null,
+                };
+              }
+              return x;
+            }),
+          );
+        },
+        onError: (msg) => {
+          throw new Error(msg);
+        },
+      });
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Something went wrong.";
+      if (message !== "aborted") setError(message);
       setMessages((m) =>
-        m
-          .map((x) =>
-            x.id === tempUser.id && res.userMessageId
-              ? { ...x, id: res.userMessageId }
-              : x,
-          )
-          .concat({
-            id: res.assistantMessageId ?? `ai-${Date.now()}`,
-            role: "assistant",
-            content: res.assistantContent ?? "",
-            citation: res.citation ?? null,
-            created_at: new Date().toISOString(),
-          }),
+        m.filter((x) => x.id !== tempUserId && x.id !== tempAssistantId),
       );
-    });
+    } finally {
+      setPending(false);
+      abortRef.current = null;
+    }
+  };
+
+  const stop = () => {
+    abortRef.current?.abort();
   };
 
   const clear = () => {
     if (!confirm("Start a new conversation? Your past chat will be archived.")) return;
-    startTransition(async () => {
+    startClearing(async () => {
       await clearAskHistory();
       setMessages([]);
     });
@@ -195,17 +229,22 @@ export function AskChat({
             />
           ) : (
             <div className="space-y-8">
-              {messages.map((m, i) => (
-                <Message
-                  key={m.id}
-                  message={m}
-                  userInitial={userInitial}
-                  isLastAssistant={i === lastAssistantIdx && !pending}
-                  followUps={i === lastAssistantIdx && !pending ? followUps : null}
-                  onFollowUp={send}
-                />
-              ))}
-              {pending ? <Thinking scope={scope} /> : null}
+              {messages.map((m, i) => {
+                const isLast = i === lastAssistantIdx;
+                const streaming = pending && isLast && m.role === "assistant";
+                return (
+                  <Message
+                    key={m.id}
+                    message={m}
+                    userInitial={userInitial}
+                    isLastAssistant={isLast && !pending}
+                    followUps={isLast && !pending ? followUps : null}
+                    onFollowUp={send}
+                    streaming={streaming}
+                    scope={scope}
+                  />
+                );
+              })}
             </div>
           )}
         </div>
@@ -275,25 +314,32 @@ export function AskChat({
                 disabled={pending}
               />
               <div className="flex items-center gap-1 pr-2 pb-2">
-                <button
-                  type="submit"
-                  disabled={pending || !draft.trim()}
-                  className="h-9 w-9 rounded-full bg-maroon text-ivory hover:bg-maroon/90 shrink-0 disabled:bg-brown/15 disabled:text-brown/40 disabled:cursor-not-allowed flex items-center justify-center transition-all active:scale-95"
-                  aria-label={pending ? "Consulting" : "Send"}
-                >
-                  {pending ? (
+                {pending ? (
+                  <button
+                    type="button"
+                    onClick={stop}
+                    className="h-9 w-9 rounded-full bg-maroon text-ivory hover:bg-maroon/90 shrink-0 flex items-center justify-center transition-all active:scale-95"
+                    aria-label="Stop"
+                  >
                     <Square className="w-3.5 h-3.5 fill-current" />
-                  ) : (
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={!draft.trim()}
+                    className="h-9 w-9 rounded-full bg-maroon text-ivory hover:bg-maroon/90 shrink-0 disabled:bg-brown/15 disabled:text-brown/40 disabled:cursor-not-allowed flex items-center justify-center transition-all active:scale-95"
+                    aria-label="Send"
+                  >
                     <Send className="w-4 h-4" />
-                  )}
-                </button>
+                  </button>
+                )}
               </div>
             </div>
           </form>
 
           <ComposerFooter
             scope={scope}
-            pending={pending}
+            pending={pending || clearing}
             onReset={clear}
             canReset={messages.length > 0}
           />
@@ -313,12 +359,16 @@ function Message({
   isLastAssistant,
   followUps,
   onFollowUp,
+  streaming,
+  scope,
 }: {
   message: AskMessage;
   userInitial: string;
   isLastAssistant: boolean;
   followUps: string[] | null;
   onFollowUp: (q: string) => void;
+  streaming: boolean;
+  scope: ChatScope | null;
 }) {
   if (message.role === "user") {
     return <UserBubble content={message.content} initial={userInitial} />;
@@ -329,6 +379,8 @@ function Message({
       isLast={isLastAssistant}
       followUps={followUps}
       onFollowUp={onFollowUp}
+      streaming={streaming}
+      scope={scope}
     />
   );
 }
@@ -356,11 +408,15 @@ function AssistantMessage({
   isLast,
   followUps,
   onFollowUp,
+  streaming,
+  scope,
 }: {
   message: AskMessage;
   isLast: boolean;
   followUps: string[] | null;
   onFollowUp: (q: string) => void;
+  streaming: boolean;
+  scope: ChatScope | null;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -386,12 +442,21 @@ function AssistantMessage({
         <div className="flex items-baseline gap-2 mb-1">
           <span className="font-display text-sm text-brown">Tatsam</span>
           <span className="text-[10px] font-mono text-brown/40">
-            {message.citation ? "cited" : "uncited"}
+            {streaming
+              ? message.content
+                ? "reading…"
+                : scope
+                  ? `consulting ${scope.source}…`
+                  : "consulting the scriptures…"
+              : message.citation
+                ? "cited"
+                : "uncited"}
           </span>
         </div>
 
         <div className="prose prose-sm max-w-none text-[15.5px] leading-[1.7] text-brown/90 whitespace-pre-wrap break-words">
           {message.content}
+          {streaming ? <StreamingCaret /> : null}
         </div>
 
         {message.citation ? (
@@ -445,6 +510,16 @@ function AssistantMessage({
         ) : null}
       </div>
     </div>
+  );
+}
+
+function StreamingCaret() {
+  return (
+    <span
+      className="inline-block w-[7px] h-4 align-text-bottom ml-0.5 bg-maroon/70 rounded-sm"
+      style={{ animation: "pulse 1.1s ease-in-out infinite" }}
+      aria-hidden
+    />
   );
 }
 
@@ -638,4 +713,60 @@ function EmptyState({
       ) : null}
     </div>
   );
+}
+
+// ─────────────────────────────────────────────────────────────
+// SSE consumer — parses /api/ask events: `delta`, `done`, `error`.
+// ─────────────────────────────────────────────────────────────
+
+type DoneFinal = {
+  userMessageId?: string;
+  assistantMessageId?: string;
+  assistantContent?: string;
+  citation?: { source: string; ref: string; passage?: string } | null;
+};
+
+async function consumeSse(
+  body: ReadableStream<Uint8Array>,
+  handlers: {
+    onDelta: (text: string) => void;
+    onDone: (final: DoneFinal) => void;
+    onError: (message: string) => void;
+  },
+) {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let buf = "";
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    let split;
+    while ((split = buf.indexOf("\n\n")) !== -1) {
+      const raw = buf.slice(0, split);
+      buf = buf.slice(split + 2);
+      let event = "message";
+      const dataLines: string[] = [];
+      for (const line of raw.split("\n")) {
+        if (line.startsWith("event:")) event = line.slice(6).trim();
+        else if (line.startsWith("data:")) dataLines.push(line.slice(5).trimStart());
+      }
+      if (dataLines.length === 0) continue;
+      let payload: unknown;
+      try {
+        payload = JSON.parse(dataLines.join("\n"));
+      } catch {
+        continue;
+      }
+      if (event === "delta" && payload && typeof payload === "object") {
+        const t = (payload as { text?: unknown }).text;
+        if (typeof t === "string") handlers.onDelta(t);
+      } else if (event === "done") {
+        handlers.onDone(payload as DoneFinal);
+      } else if (event === "error") {
+        const m = (payload as { message?: unknown }).message;
+        handlers.onError(typeof m === "string" ? m : "Stream error");
+      }
+    }
+  }
 }

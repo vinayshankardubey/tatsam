@@ -1,8 +1,15 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser, getCurrentProfile } from "@/lib/supabase/current-user";
 import { AskChat, type AskMessage } from "./chat";
-import { STARTER_PROMPTS } from "@/lib/ask-stub";
 import { findTool } from "@/lib/tatsam-tools";
+
+const STARTER_PROMPTS = [
+  "Should I take the role I was offered, or wait?",
+  "I feel anxious about a decision I need to make this week.",
+  "Tell me what my chart says about money this year.",
+  "When is an auspicious time to begin something new?",
+  "What is the Gita's view on commitment vs freedom?",
+];
 
 export default async function AskPage({
   searchParams,
