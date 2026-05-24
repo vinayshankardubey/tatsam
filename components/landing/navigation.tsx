@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
@@ -27,41 +27,22 @@ const SIGNED_IN_LINKS: Array<{ name: string; href: string }> = [
 
 export function Navigation({ isSignedIn = false }: { isSignedIn?: boolean }) {
   const navLinks = isSignedIn ? SIGNED_IN_LINKS : PUBLIC_LINKS;
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
-    <header
-      className={`fixed z-50 transition-all duration-500 ${
-        isScrolled 
-          ? "top-4 left-4 right-4" 
-          : "top-0 left-0 right-0"
-      }`}
-    >
-      <nav 
-        className={`mx-auto transition-all duration-500 ${
-          isScrolled || isMobileMenuOpen
-            ? "bg-background/80 backdrop-blur-xl border border-foreground/10 rounded-2xl shadow-lg max-w-[1200px]"
-            : "bg-transparent max-w-[1400px]"
+    <header className="sticky top-0 left-0 right-0 z-50">
+      <nav
+        className={`mx-auto max-w-[1400px] ${
+          isMobileMenuOpen
+            ? "bg-background/80 backdrop-blur-xl border border-foreground/10"
+            : "bg-transparent"
         }`}
       >
-        <div 
-          className={`flex items-center justify-between transition-all duration-500 px-6 lg:px-8 ${
-            isScrolled ? "h-14" : "h-20"
-          }`}
-        >
+        <div className="flex items-center justify-between px-6 lg:px-8 h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <span className={`font-display tracking-tight text-brown transition-all duration-500 ${isScrolled ? "text-xl" : "text-2xl"}`}>Tatsam</span>
-            <span className={`font-mono transition-all duration-500 text-brown/55 ${isScrolled ? "text-[10px] mt-0.5" : "text-xs mt-1"}`}>तत्सम्</span>
+            <span className="font-display tracking-tight text-brown text-2xl">Tatsam</span>
+            <span className="font-mono text-brown/55 text-xs mt-1">तत्सम्</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -81,18 +62,18 @@ export function Navigation({ isSignedIn = false }: { isSignedIn?: boolean }) {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
             {isSignedIn ? (
-              <Link href="/dashboard" className={`transition-all duration-500 text-brown/70 hover:text-brown ${isScrolled ? "text-xs" : "text-sm"}`}>
+              <Link href="/dashboard" className="text-sm text-brown/70 hover:text-brown">
                 Dashboard
               </Link>
             ) : (
-              <Link href="/login" className={`transition-all duration-500 text-brown/70 hover:text-brown ${isScrolled ? "text-xs" : "text-sm"}`}>
+              <Link href="/login" className="text-sm text-brown/70 hover:text-brown">
                 Sign in
               </Link>
             )}
             <Button
               asChild
               size="sm"
-              className={`rounded-full transition-all duration-500 bg-maroon text-ivory hover:bg-maroon/90 ${isScrolled ? "px-4 h-8 text-xs" : "px-6"}`}
+              className="rounded-full bg-maroon text-ivory hover:bg-maroon/90 px-6"
             >
               <Link href="/dashboard/ask">Ask a question</Link>
             </Button>
@@ -111,12 +92,12 @@ export function Navigation({ isSignedIn = false }: { isSignedIn?: boolean }) {
         </div>
 
       </nav>
-      
+
       {/* Mobile Menu - Full Screen Overlay */}
       <div
         className={`md:hidden fixed inset-0 bg-background z-40 transition-all duration-500 ${
-          isMobileMenuOpen 
-            ? "opacity-100 pointer-events-auto" 
+          isMobileMenuOpen
+            ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
         }`}
         style={{ top: 0 }}
@@ -150,11 +131,11 @@ export function Navigation({ isSignedIn = false }: { isSignedIn?: boolean }) {
               </Link>
             ))}
           </div>
-          
+
           {/* Bottom CTAs */}
           <div className={`flex gap-4 pt-8 border-t border-foreground/10 transition-all duration-500 ${
-            isMobileMenuOpen 
-              ? "opacity-100 translate-y-0" 
+            isMobileMenuOpen
+              ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-4"
           }`}
           style={{ transitionDelay: isMobileMenuOpen ? "300ms" : "0ms" }}

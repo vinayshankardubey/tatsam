@@ -57,7 +57,7 @@ export function SecuritySection() {
   }, []);
 
   return (
-    <section id="security" ref={sectionRef} className="relative py-32 lg:py-40 overflow-hidden">
+    <section id="security" ref={sectionRef} className="relative py-16 lg:py-24 overflow-hidden">
       {/* Background accent removed */}
       
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">

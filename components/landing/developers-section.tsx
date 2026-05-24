@@ -38,7 +38,7 @@ export function DevelopersSection() {
   }, []);
 
   return (
-    <section id="developers" ref={sectionRef} className="relative py-24 lg:py-32 overflow-hidden">
+    <section id="developers" ref={sectionRef} className="relative py-14 lg:py-20 overflow-hidden">
 
       {/* Image — absolute, bottom-right, behind all content */}
       <div

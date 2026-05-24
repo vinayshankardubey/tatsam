@@ -39,7 +39,7 @@ export function IntegrationsSection() {
     <section id="integrations" ref={sectionRef} className="relative overflow-hidden">
 
       {/* Header — centré verticalement sur l'image */}
-      <div className="relative z-10 pt-32 lg:pt-40 text-center">
+      <div className="relative z-10 pt-10 lg:pt-16 text-center">
         <span className={`inline-flex items-center text-sm font-mono text-muted-foreground mb-8 transition-all duration-700 justify-center ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
@@ -144,7 +144,7 @@ export function IntegrationsSection() {
         </div>
 
         {/* Bottom stats row */}
-        <div className={`flex flex-wrap items-center justify-between gap-8 pt-12 border-t border-foreground/10 transition-all duration-1000 delay-500 pb-32 lg:pb-40 ${
+        <div className={`flex flex-wrap items-center justify-between gap-8 pt-12 border-t border-foreground/10 transition-all duration-1000 delay-500 pb-12 lg:pb-16 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
           <div className="flex flex-wrap gap-12">
